@@ -63,9 +63,9 @@ class ConsoleWindow{
 	}
 	
 	char[][] snap(){
-		char[][] snap;
-		snap.length = size.x; foreach(int y; 0 .. size.x) snap[y].length = size.y;
-		foreach(x; 0 .. size.x) snap[x][0 .. $] = ' ';
+		//Thanks ketmar from #d
+		char[][] snap = new char[][](slots.length, slots[0].length);
+		foreach (x, col; snap) col[] = slots[x][];
 
 		foreach(a; 0 .. layers.length)
 		foreach(x; 0 .. layers[a].size.x)
@@ -88,7 +88,7 @@ class ConsoleWindow{
 class ConsoleLayer : ConsoleWindow{
 	string id;
 	XY location;
-	this(XY size, XY location, char fill = '*'){
+	this(XY location, XY size, char fill = '*'){
 		this.id = id;
 		this.location = location;
 		super(size, fill);
