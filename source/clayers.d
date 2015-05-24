@@ -1,7 +1,7 @@
 ﻿module clayers;
 
-import std.stdio;
 import consoled : setCursorPos;
+import std.stdio;
 import std.algorithm;
 import std.datetime;
 
@@ -14,7 +14,7 @@ class ConsoleWindow{
 	
 	protected char[][] slots;
 	
-	this(XY size, char fill = ' '){
+	this(XY size = XY(80, 24), char fill = ' '){
 		this.size = size;
 		
 		//Sets the width and height
@@ -34,7 +34,7 @@ class ConsoleWindow{
 	
 	void print(){
 		char[][] writes = snap();
-		
+
 		string print;
 		foreach(int y; 0 .. size.y){
 			foreach(int x; 0 .. size.x)
@@ -63,30 +63,26 @@ class ConsoleWindow{
 	}
 	
 	char[][] snap(){
-		char[][] snap = slots;
+		char[][] snap;
+		snap.length = size.x; foreach(int y; 0 .. size.x) snap[y].length = size.y;
+		foreach(x; 0 .. size.x) snap[x][0 .. $] = ' ';
+
 		foreach(a; 0 .. layers.length)
-			foreach(x; 0 .. layers[a].size.x)
-				foreach(y; 0 .. layers[a].size.y)
-					snap[x + layers[a].location.x][y + layers[a].location.y] = layers[a].slots[x][y];
+		foreach(x; 0 .. layers[a].size.x)
+		foreach(y; 0 .. layers[a].size.y)
+			snap[x + layers[a].location.x][y + layers[a].location.y] = layers[a].slots[x][y];
 		
 		return snap;
-		
 	}
-	
-	//FIXME remove layers does not work
+
 	void removeLayer(ConsoleLayer cl){
-		foreach(swag; 0 .. layers.length){
-			if(layers[swag] == cl){
-				layers = remove(layers, swag);
+		foreach(n; 0 .. layers.length){
+			if(cl == layers[n]){
+				layers = remove(layers, n);
 				break;
 			}
 		}
 	}
-	
-	//	void update(){
-	//		print();
-	//	}
-	
 }
 
 class ConsoleLayer : ConsoleWindow{
