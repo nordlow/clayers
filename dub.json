@@ -1,0 +1,9 @@
+{
+	"name": "clayers",
+	"description": "Multiple console layer handling.",
+	"copyright": "Copyright © 2015, vladde",
+	"authors": ["vladdeSV"],
+	"dependencies": {
+		"consoled": "~>1.0.0"
+	}
+}
