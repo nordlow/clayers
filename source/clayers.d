@@ -14,14 +14,21 @@ class ConsoleWindow{
 	
 	protected char[][] slots;
 	
-	this(XY size = XY(80, 24), char fill = ' '){
+	this(XY size = XY(80, 24), char background = ' ', char border = ' '){
 		this.size = size;
 		
 		//Sets the width and height
 		slots.length = size.x; foreach(int y; 0 .. size.x) slots[y].length = size.y;
 		
-		//Set every tile to be the "filling"
-		foreach(x; 0 .. size.x) slots[x][0 .. $] = fill;
+		//Set every tile to be the background
+		foreach(x; 0 .. size.x) slots[x][0 .. $] = background;
+
+		if(border != ' '){
+			foreach(x; 0 .. size.x)
+			foreach(y; 0 .. size.y)
+				if(x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1)
+					slots[x][y] = border;
+		}
 	}
 	
 	char getSlot(XY location){
@@ -43,7 +50,8 @@ class ConsoleWindow{
 			write(print);
 			print = null;
 		}
-		
+		setCursorPos(0, 0);
+
 		/+ The version below is about ~15 times faster, but unreliable.
 		 + 
 		 + For instance, once a whole 80 character line has been
@@ -83,15 +91,26 @@ class ConsoleWindow{
 			}
 		}
 	}
+
+	void moveLayerForward(ConsoleLayer cl, int amount = 1){
+		foreach(c; 0 .. amount)
+		foreach(a; 0 .. layers.length){
+			if(layers[a] == cl && a < layers.length - 1){
+				auto t = layers[a + 1];
+				layers[a + 1] = layers[a];
+				layers[a] = t;
+			}
+		}
+	}
 }
 
 class ConsoleLayer : ConsoleWindow{
 	string id;
 	XY location;
-	this(XY location, XY size, char fill = '*'){
+	this(XY location, XY size, char background = ' ', char border = ' '){
 		this.id = id;
 		this.location = location;
-		super(size, fill);
+		super(size, background, border);
 	}
 	
 	char getLayerSlot(XY location){
