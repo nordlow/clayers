@@ -92,6 +92,22 @@ class ConsoleWindow{
 		}
 	}
 
+	void moveLayerFront(ConsoleLayer cl){
+		foreach(a; 0 .. layers.length){
+			if(layers[a] == cl){
+				moveLayerForward(cl, layers.length - a);
+			}
+		}
+	}
+
+	void moveLayerBack(ConsoleLayer cl){
+		foreach(a; 0 .. layers.length){
+			if(layers[a] == cl){
+				moveLayerBackward(cl, a);
+			}
+		}
+	}
+
 	void moveLayerForward(ConsoleLayer cl, int amount = 1){
 		foreach(c; 0 .. amount)
 		foreach(a; 0 .. layers.length){
@@ -102,13 +118,22 @@ class ConsoleWindow{
 			}
 		}
 	}
+
+	void moveLayerBackward(ConsoleLayer cl, int amount = 1){
+		foreach(c; 0 .. amount)
+		foreach(a; 0 .. layers.length){
+			if(layers[a] == cl && a > 0){
+				auto t = layers[a - 1];
+				layers[a - 1] = layers[a];
+				layers[a] = t;
+			}
+		}
+	}
 }
 
 class ConsoleLayer : ConsoleWindow{
-	string id;
 	XY location;
 	this(XY location, XY size, char background = ' ', char border = ' '){
-		this.id = id;
 		this.location = location;
 		super(size, background, border);
 	}
