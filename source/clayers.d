@@ -1,6 +1,6 @@
 ﻿module clayers;
 
-import consoled : setCursorPos;
+import consoled : setCursorPos, width, height;
 import std.stdio;
 import std.algorithm;
 import std.datetime;
@@ -8,13 +8,19 @@ import std.datetime;
 struct XY{int x,y;}
 
 class ConsoleWindow{
-	
+
+	static int windowWidth, windowHeight;
+	static this(){
+		windowWidth = width;
+		windowHeight= height;
+	}
+
 	ConsoleLayer[] layers;
 	XY size;
 	
 	protected char[][] slots;
 	
-	this(XY size = XY(80, 24), char background = ' ', char border = ' '){
+	this(XY size = XY(windowWidth, windowHeight), char background = ' ', char border = ' '){
 		this.size = size;
 		
 		//Sets the width and height
