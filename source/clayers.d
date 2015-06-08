@@ -1,6 +1,6 @@
 ﻿module clayers;
 
-import consoled : setCursorPos;
+import consoled : setCursorPos, width, height;
 import std.stdio;
 import std.algorithm;
 import std.datetime;
@@ -8,13 +8,20 @@ import std.datetime;
 struct XY{int x,y;}
 
 class ConsoleWindow{
-	
+
+	static int windowWidth, windowHeight;
+	static this(){
+		windowWidth = width;
+		windowHeight= height;
+	}
+
 	ConsoleLayer[] layers;
 	XY size;
+	bool hasBorder = false;
 	
 	protected char[][] slots;
 	
-	this(XY size = XY(80, 24), char background = ' ', char border = ' '){
+	this(XY size = XY(windowWidth, windowHeight), char background = ' ', char border = ' '){
 		this.size = size;
 		
 		//Sets the width and height
@@ -24,6 +31,7 @@ class ConsoleWindow{
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = background;
 
 		if(border != ' '){
+			hasBorder = true;
 			foreach(x; 0 .. size.x)
 			foreach(y; 0 .. size.y)
 				if(x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1)
@@ -44,10 +52,12 @@ class ConsoleWindow{
 
 		string print;
 		foreach(int y; 0 .. size.y){
-			foreach(int x; 0 .. size.x)
+			foreach(int x; 0 .. size.x){
 				print ~= writes[x][y];
+			}
+
 			setCursorPos(0, y);
-			write(print);
+			std.stdio.write(print);
 			print = null;
 		}
 		setCursorPos(0, 0);
@@ -79,8 +89,31 @@ class ConsoleWindow{
 		foreach(x; 0 .. layers[a].size.x)
 		foreach(y; 0 .. layers[a].size.y)
 			snap[x + layers[a].location.x][y + layers[a].location.y] = layers[a].slots[x][y];
-		
+
 		return snap;
+	}
+
+	void layerWrite(XY xy, char c){
+		slots[xy.x][xy.y] = c;
+
+		//print(); //Is there a better way to do this?
+	}
+
+	void layerWrite(XY xy, string s)
+	{
+		if(hasBorder){
+			foreach(a; 0 .. s.length){
+				int split = cast(int)(1 + (xy.x + a) / (size.x - 2));
+				slots[1 + (xy.x + a) % (size.x - 2)][xy.y + split] = s[a]; //FIXME y may still write on border
+			}
+		}else{
+			foreach(a; 0 .. s.length){
+				int split = cast(int)((xy.x + a) / size.x);
+				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+			}
+		}
+
+		//print();
 	}
 
 	void removeLayer(ConsoleLayer cl){

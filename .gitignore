@@ -4,5 +4,6 @@ __dummy.html
 *.o
 *.obj
 *.lib
+*.exe
 dub.userprefs
 dub.selections.json
