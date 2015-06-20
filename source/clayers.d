@@ -11,7 +11,6 @@ class ConsoleWindow{
 	protected char[][] slots;
  	
 	protected XY size;
-	protected bool transparent = false;
 
 	this(XY size = XY(80, 24)){
 		this.size = size;
@@ -63,8 +62,6 @@ class ConsoleWindow{
 	
 	/**
 	 * Returns the char at the specific X and Y coordinates in the window.
-	 * 
-	 * When called, it merges all the layers together, then returns the char.
 	*/
 	char getSlot(XY location){
 		return snap()[location.x][location.y];
@@ -117,41 +114,13 @@ class ConsoleWindow{
 		foreach (x, col; snap) col[] = slots[x][];
 
 		foreach(a; 0 .. layers.length)
-		foreach(x; 0 .. layers[a].size.x)
-		foreach(y; 0 .. layers[a].size.y)
-			if(!(layers[a].isTransparent() && layers[a].getSlot(XY(x,y)) == ' '))
-				snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
-
+            if(layers[a].visible){
+                foreach(x; 0 .. layers[a].size.x)
+                foreach(y; 0 .. layers[a].size.y)
+                    if(!(layers[a].transparent && layers[a].getSlot(XY(x,y)) == ' '))
+                        snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+        }
 		return snap;
-	}
-
-	/*
-	* Functions like std.stdio.write(), only it writes in the layer.
-	*
-	* Params:
-	*	 xy = X and Y positions of where to write.
-	*	 c = The character to write.
-	*/
-	void layerWrite(XY xy, char c){
-		try{
-			slots[xy.x][xy.y] = c;
-		}catch{ /* Well, I don't really know what to do then. TODO: Log maybe? */ }
-	}
-
-	/*
-	* Functions like std.stdio.write(), only it writes in the layer.
-	*
-	* Params:
-	*	 xy = X and Y positions of where to write.
-	*	 s = The string to be written. Does wrap around, does not overwrite border
-	*/
-	void layerWrite(XY xy, string s){
-		try{
-			foreach(a; 0 .. s.length){
-				int split = cast(int)((xy.x + a) / size.x);
-				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
-			}
-		}catch{ /* If the string 'overflows', what to do? TODO: Log maybe? */ }
 	}
 
 	/**
@@ -182,73 +151,12 @@ class ConsoleWindow{
 		//TODO: Log if layer could not be removed.
 	}
 
-	/**
-	* Move a specific layer to the front.
-	*
-	* Params:
-	*	 cl = Layer to be moved to the front.
-	*/
-	void moveLayerFront(ConsoleLayer cl){
-		foreach(a; 0 .. layers.length){
-			if(layers[a] == cl){
-				moveLayerForward(cl, layers.length - a);
-			}
-		}
-	}
-
-	/**
-	* Move a specific layer to the back.
-	*
-	* Params:
-	*	 cl = Layer to be moved to the back.
-	*/
-	void moveLayerBack(ConsoleLayer cl){
-		foreach(a; 0 .. layers.length){
-			if(layers[a] == cl){
-				moveLayerBackward(cl, a);
-			}
-		}
-	}
-
-	/*
-	* Moves a layer forward `amount` amount of times.
-	*
-	* Params:
-	*	 cl = Layer to be moved. 
-	*	 amount = The amount of times the layer should be moved.
-	*/
-	void moveLayerForward(ConsoleLayer cl, size_t amount = 1){
-		foreach(c; 0 .. amount)
-		foreach(a; 0 .. layers.length){
-			if(layers[a] == cl && a < layers.length - 1){
-				auto t = layers[a + 1];
-				layers[a + 1] = layers[a];
-				layers[a] = t;
-			}
-		}
-	}
-
-	/*
-	* Moves a layer backwards	`amount` amount of times.
-	*
-	* Params:
-	*	 cl = Layer to be moved. 
-	*	 amount = The amount of times the layer should be moved.
-	*/
-	void moveLayerBackward(ConsoleLayer cl, size_t amount = 1){
-		foreach(c; 0 .. amount)
-		foreach(a; 0 .. layers.length){
-			if(layers[a] == cl && a > 0){
-				auto t = layers[a - 1];
-				layers[a - 1] = layers[a];
-				layers[a] = t;
-			}
-		}
-	}
 }
 
 class ConsoleLayer : ConsoleWindow{
-	XY location;
+	protected XY location;
+	protected bool transparent_ = false, visible_ = true;
+
 	this(XY location, XY size, bool transparent = false){
 		this.location = location;
 		this.transparent = transparent;
@@ -256,12 +164,29 @@ class ConsoleLayer : ConsoleWindow{
 		super(size);
 	}
 
-	/**
-	* Is the layer transparent or not?
-	*/
-	bool isTransparent(){
-		return transparent;
-	}
+    @property{
+        /**
+        * Is the layer transparent or not?
+        */
+        bool transparent(){
+            return transparent_;
+        }
+        
+        bool transparent(bool isTransparent){
+            return transparent_ = isTransparent;
+        }
+        
+        /**
+        * Is the layer visible or not?
+        */
+        bool visible(){
+            return visible_;
+        }
+        
+        bool visible(bool isVisible){
+            return visible_ = isVisible;
+        }
+    }
 	
 	/*
 	* Returns the char at specified slot.
@@ -273,15 +198,96 @@ class ConsoleLayer : ConsoleWindow{
 		return slots[location.x][location.y];
 	}
 	
-	/*
-	* Sets a char at specified slot.
+    /*
+	* Functions like std.stdio.write(), only it writes in the layer.
 	*
 	* Params:
-	*	 location = X and Y coordinates of the slot to change.
-	*	 a = The char to set in the slot.
-	*/	
-	void setSlot(XY location, char a){
-		slots[location.x][location.y] = a;
+	*	 xy = X and Y positions of where to write.
+	*	 c = The character to write.
+	*/
+	void layerWrite(XY xy, char c){
+		try{
+			slots[xy.x][xy.y] = c;
+		}catch{ /* Well, I don't really know what to do then. TODO: Log maybe? */ }
+	}
+
+	/*
+	* Functions like std.stdio.write(), only it writes in the layer. Does wrap around badly, no overflow.
+	*
+	* Params:
+	*	 xy = X and Y positions of where to write.
+	*	 s = The string to be written.
+	*/
+	void layerWrite(XY xy, string s){
+		try{
+			foreach(a; 0 .. s.length){
+				int split = cast(int)((xy.x + a) / size.x);
+				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+			}
+		}catch{ /* If the string 'overflows', what to do? TODO: Log maybe? */ }
+	}
+
+    /**
+    * Calls removeLayer(this);
+    */
+    void remove(){
+        removeLayer(this);
+    }
+	
+	/**
+	* Moves the layer to the front.
+	*
+	* Params:
+	*	 cl = Layer to be moved to the front.
+	*/
+	void moveLayerFront(){
+        moveLayerForward(layers.length);
+	}
+
+	/**
+	* Moves the layer to the back.
+	*
+	* Params:
+	*	 cl = Layer to be moved to the back.
+	*/
+	void moveLayerBack(){
+        moveLayerBackward(layers.length);
+	}
+
+	/*
+	* Moves the layer forward `amount` amount of times.
+	*
+	* Params:
+	*	 cl = Layer to be moved. 
+	*	 amount = The amount of times the layer should be moved.
+	*/
+	void moveLayerForward(size_t amount = 1){
+		foreach(c; 0 .. amount)
+		foreach(a; 0 .. layers.length){
+			if(layers[a] == this && a < layers.length - 1){
+				auto t = layers[a + 1];
+				layers[a + 1] = layers[a];
+				layers[a] = t;
+			}
+		}
+	}
+
+	/*
+	* Moves the layer backwards `amount` amount of times.
+	*
+	* Params:
+	*	 cl = Layer to be moved. 
+	*	 amount = The amount of times the layer should be moved.
+	*/
+	void moveLayerBackward(size_t amount = 1){
+		foreach(c; 0 .. amount)
+		foreach(a; 0 .. layers.length){
+			if(layers[a] == this && a > 0){
+				auto t = layers[a - 1];
+				layers[a - 1] = layers[a];
+				layers[a] = t;
+			}
+		}
 	}
 }
 
