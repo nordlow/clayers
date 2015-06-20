@@ -6,12 +6,12 @@ struct XY{size_t x,y;}
 
 class ConsoleWindow{
 
-    //TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
+	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
 	protected ConsoleLayer[] layers;
-    protected char[][] slots;
+	protected char[][] slots;
  	
 	protected XY size;
-    protected bool transparent = false;
+	protected bool transparent = false;
 
 	this(XY size = XY(80, 24)){
 		this.size = size;
@@ -119,8 +119,8 @@ class ConsoleWindow{
 		foreach(a; 0 .. layers.length)
 		foreach(x; 0 .. layers[a].size.x)
 		foreach(y; 0 .. layers[a].size.y)
-            if(!(layers[a].isTransparent() && layers[a].getSlot(XY(x,y)) == ' '))
-    			snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+			if(!(layers[a].isTransparent() && layers[a].getSlot(XY(x,y)) == ' '))
+				snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
 
 		return snap;
 	}
@@ -147,10 +147,10 @@ class ConsoleWindow{
 	*/
 	void layerWrite(XY xy, string s){
 		try{
-            foreach(a; 0 .. s.length){
-                int split = cast(int)((xy.x + a) / size.x);
-                slots[(xy.x + a) % size.x][xy.y + split] = s[a];
-            }
+			foreach(a; 0 .. s.length){
+				int split = cast(int)((xy.x + a) / size.x);
+				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+			}
 		}catch{ /* If the string 'overflows', what to do? TODO: Log maybe? */ }
 	}
 
@@ -251,17 +251,17 @@ class ConsoleLayer : ConsoleWindow{
 	XY location;
 	this(XY location, XY size, bool transparent = false){
 		this.location = location;
-        this.transparent = transparent;
+		this.transparent = transparent;
 
 		super(size);
 	}
 
-    /**
-    * Is the layer transparent or not?
-    */
-    bool isTransparent(){
-        return transparent;
-    }
+	/**
+	* Is the layer transparent or not?
+	*/
+	bool isTransparent(){
+		return transparent;
+	}
 	
 	/*
 	* Returns the char at specified slot.
