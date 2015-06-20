@@ -6,28 +6,28 @@ struct XY{size_t x,y;}
 
 class ConsoleWindow{
 
-	protected ConsoleLayer[] layers;
-	protected XY size;
-	protected bool hasBorder = false;
-	protected char[][] slots;
-	
-	this(XY size = XY(80, 24), char background = ' ', char border = ' '){
-		this.size = size;
-		
-		//Sets the width and height.
+  protected ConsoleLayer[] layers;
+  protected XY size;
+  protected bool hasBorder = false;
+  protected char[][] slots;
+ 	
+  this(XY size = XY(80, 24), char background = ' ', char border = ' '){
+    this.size = size;
+
+    //Sets the width and height.
     slots = new char[][](size.x, size.y);	
 
-		//Set every tile to be the background.
-		foreach(x; 0 .. size.x) slots[x][0 .. $] = background;
+    //Set every tile to be the background.
+    foreach(x; 0 .. size.x) slots[x][0 .. $] = background;
 
-		if(border != ' '){
-			hasBorder = true;
-			foreach(x; 0 .. size.x)
-			foreach(y; 0 .. size.y)
-				if(x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1)
-					slots[x][y] = border;
-		}
-	}
+    if(border != ' '){
+      hasBorder = true;
+      foreach(x; 0 .. size.x)
+      foreach(y; 0 .. size.y)
+      if(x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1)
+      slots[x][y] = border;
+    }
+  }
   
 
   version(Windows){
