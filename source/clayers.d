@@ -6,27 +6,20 @@ struct XY{size_t x,y;}
 
 class ConsoleWindow{
 
+    //TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
 	protected ConsoleLayer[] layers;
-	protected XY size;
-	protected bool hasBorder = false;
-	protected char[][] slots;
+    protected char[][] slots;
  	
-	this(XY size = XY(80, 24), char background = ' ', char border = ' '){
+	protected XY size;
+    protected bool transparent = false;
+
+	this(XY size = XY(80, 24)){
 		this.size = size;
 
 		//Sets the width and height.
 		slots = new char[][](size.x, size.y);	
-
 		//Set every tile to be the background.
-		foreach(x; 0 .. size.x) slots[x][0 .. $] = background;
-
-		if(border != ' '){
-			hasBorder = true;
-			foreach(x; 0 .. size.x)
-			foreach(y; 0 .. size.y)
-			if(x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1)
-			slots[x][y] = border;
-		}
+		foreach(x; 0 .. size.x) slots[x][0 .. $] = ' ';
 	}
 	
 	version(Windows){
@@ -40,7 +33,7 @@ class ConsoleWindow{
 	 * Params:
 	 *	XY = X and Y coordinates where the cursor should be put.
 	*/
-	protected void scp(XY pos){
+	private void scp(XY pos){
 		version(Windows){
 			COORD c = {cast(short)min(width,max(0,pos.x)), cast(short)max(0,pos.y)};
 			stdout.flush();
@@ -126,7 +119,8 @@ class ConsoleWindow{
 		foreach(a; 0 .. layers.length)
 		foreach(x; 0 .. layers[a].size.x)
 		foreach(y; 0 .. layers[a].size.y)
-			snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].slots[x][y];
+            if(!(layers[a].isTransparent() && layers[a].getSlot(XY(x,y)) == ' '))
+    			snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
 
 		return snap;
 	}
@@ -153,18 +147,10 @@ class ConsoleWindow{
 	*/
 	void layerWrite(XY xy, string s){
 		try{
-			if(hasBorder){
-				foreach(a; 0 .. s.length){
-					int split = cast(int)(1 + (xy.x + a) / (size.x - 2));
-					//FIXME y may still write on border
-					slots[1 + (xy.x + a) % (size.x - 2)][xy.y + split] = s[a];
-				}
-			}else{
-				foreach(a; 0 .. s.length){
-					int split = cast(int)((xy.x + a) / size.x);
-					slots[(xy.x + a) % size.x][xy.y + split] = s[a];
-				}
-			}
+            foreach(a; 0 .. s.length){
+                int split = cast(int)((xy.x + a) / size.x);
+                slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+            }
 		}catch{ /* If the string 'overflows', what to do? TODO: Log maybe? */ }
 	}
 
@@ -263,10 +249,19 @@ class ConsoleWindow{
 
 class ConsoleLayer : ConsoleWindow{
 	XY location;
-	this(XY location, XY size, char background = ' ', char border = ' '){
+	this(XY location, XY size, bool transparent = false){
 		this.location = location;
-		super(size, background, border);
+        this.transparent = transparent;
+
+		super(size);
 	}
+
+    /**
+    * Is the layer transparent or not?
+    */
+    bool isTransparent(){
+        return transparent;
+    }
 	
 	/*
 	* Returns the char at specified slot.
@@ -285,7 +280,7 @@ class ConsoleLayer : ConsoleWindow{
 	*	 location = X and Y coordinates of the slot to change.
 	*	 a = The char to set in the slot.
 	*/	
-	override void setSlot(XY location, char a){
+	void setSlot(XY location, char a){
 		slots[location.x][location.y] = a;
 	}
 }
