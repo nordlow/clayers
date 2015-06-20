@@ -25,8 +25,8 @@ Now add a new layer! It's easy, just do:
 auto layer = new ConsoleLayer(XY(0, 0), XY(15, 15));
 window.addLayer(layer);
 ```
-This creates a new layer at position 0,0 with the size of 15x15 slots, and then the layer is added to the window.
-***NOTE:** You can make changes to the layers even after you've added them. See below for example!*
+This creates a new layer at position 0,0 with the size of 15x15 slots, and then the layer is added to the window.  
+* **NOTE:** You can make changes to the layers even after you've added them. See below for example!
 
 Okay! Layer is set, but let's add a some text, and maybe a little star ;-)
 ```d
@@ -93,64 +93,129 @@ You know what? I really dislike that box so much I just want it gone from my lif
 layer3.remove(); //or alternatively window.removeLayer(layer3);
 ```
 
-###Amazing!jj
+###Amazing!
 If you followed though this little tutorial, you should be able to use clayers! Nice! ;-)
 
 ## Reference
 ### class ```ConsoleWindow```
 
-```@propery size_t width()```
+```d
+@propery size_t width()
+```
 Returns the width of the window/layer.
 
-```@propery size_t height()```
+---
+
+```d
+@propery size_t height()
+```
 Returns the width of the window/layer.
 
-```getSlot(XY location)```
+---
+
+```d
+getSlot(XY location)
+```
 Returns the char at the specific X and Y coordinates in the window. 
 
-```void print()```
+---
+
+```d
+void print()
+```
 Prints all the layers in the correct order.
 
-```char[][] snap()```
+---
+
+```d
+char[][] snap()
+```
 Returns a 'snap', snapshot, of all the layers merged.
 
-```void addLayer(ConsoleLayer cl)```
-Adds a new layer.
-DO NOT USE ```new ConsoleLayer(...)```, because there is no way to remove the layer otherwise.
+---
 
-```void removeLayer(ConsoleLayer cl)```
+```d
+void addLayer(ConsoleLayer cl)
+```
+Adds a new layer.  
+* **DO NOT USE** ```addLayer(new ConsoleLayer(...))```, because there is no way to remove the layer otherwise.
+
+---
+
+```d
+void removeLayer(ConsoleLayer cl)
+```
 Removes a specific layer
 
+---
+
 ### class ```ConsoleLayer``` inherits from ```ConsoleWindow```
-```@property bool transparent```
-```@property bool transparent(bool isTransparent)```
+```d
+@property bool transparent()
+@property bool transparent(bool isTransparent)
+```
 Is the layer transparent or not?
 
-```@property bool visible()```
-```@property bool visible(bool isVisible)```
+---
+
+```d
+@property bool visible()
+@property bool visible(bool isVisible)
+```
 Is the layer visible or not?
 
-```override char getSlot(XY location)```
+---
+
+```d
+override char getSlot(XY location)
+```
 Returns the char at specified slot.
 
-```void layerWrite(XY xy, char c)```
+---
+
+```d
+void layerWrite(XY xy, char c)
+```
 Functions like std.stdio.write(), only it writes in the layer.
 
-```void layerWrite(XY xy, string s)```
+---
+
+```d
+void layerWrite(XY xy, string s)
+```
 Functions like std.stdio.write(), only it writes in the layer. Does wrap around badly, no overflow.
 
-```void remove()```
+---
+
+```d
+void remove()
+```
 Calls removeLayer(this);
 
-```void moveLayerFront()```
+---
+
+```d
+void moveLayerFront()
+```
 Moves the layer to the front.
 
-```void moveLayerBack()```
+---
+
+```d
+void moveLayerBack()
+```
 Moves the layer to the back.
 
-```void moveLayerForward(size_t amount = 1)```
+---
+
+```d
+void moveLayerForward(size_t amount = 1)
+```
 Moves the layer forward `amount` amount of times.
 
-```void moveLayerBackward(size_t amount = 1)```
-Moves the layer backwards `amount` amount of times.
+---
 
+```d
+void moveLayerBackward(size_t amount = 1)
+```
+Moves the layer backwards `amount` amount of times.
