@@ -29,7 +29,6 @@ class ConsoleWindow{
 		}
 	}
   
-
   version(Windows){
     import core.sys.windows.windows;
     HANDLE hOutput = null, hInput = null;
@@ -103,7 +102,7 @@ class ConsoleWindow{
 		 + line. And then the command to send a newline happens
 		 + which causes empty lines to appear.
 	   +
-     + TODO: I guess I could check if the width is >80 (somehow), and only then append the '\n'. 
+     + TODO: I guess I could check if the width is less than the window width minus one (somehow), and only then append the '\n'. 
 
 		string print2;
 		foreach(int y; 0 .. size.y){
