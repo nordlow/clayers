@@ -114,7 +114,7 @@ Returns the width of the window/layer.
 ---
 
 ```d
-getSlot(XY location)
+char getSlot(XY location)
 ```
 Returns the char at the specific X and Y coordinates in the window. 
 
@@ -149,7 +149,7 @@ Removes a specific layer
 
 ---
 
-### class ```ConsoleLayer``` inherits from ```ConsoleWindow```
+### class ```ConsoleLayer```, inherits ```ConsoleWindow```
 ```d
 @property bool transparent()
 @property bool transparent(bool isTransparent)
