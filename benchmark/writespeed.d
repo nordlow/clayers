@@ -8,7 +8,15 @@ void main(){
     StopWatch s1, s2;
 
     int scpheavy, liner;
-    File file = File("writespeed_output", "w");
+    string filename = "writespeed_output_unknown";
+    version(Windows){
+        filename = "writespeed_output_windows";
+    }
+    version(Posix){
+        filename = "writespeed_output_linux";
+    }
+
+    File file = File(filename, "w");
 
     file.write("SCP = set cursor position\nliner = append to string, then write\n");
     version(Windows){
