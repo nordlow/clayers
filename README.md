@@ -176,21 +176,21 @@ Returns the char at specified slot.
 ```d
 void layerWrite(XY xy, char c)
 ```
-Functions like std.stdio.write(), only it writes in the layer.
+Functions like ```std.stdio.write();```, only it writes in the layer.
 
 ---
 
 ```d
 void layerWrite(XY xy, string s)
 ```
-Functions like std.stdio.write(), only it writes in the layer. Does wrap around badly, no overflow.
+Functions like ```std.stdio.write();```, only it writes in the layer. Does wrap around badly, no overflow.
 
 ---
 
 ```d
 void remove()
 ```
-Calls removeLayer(this);
+Calls ```removeLayer(this);```.
 
 ---
 
