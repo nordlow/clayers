@@ -155,6 +155,7 @@ Removes a specific layer
 @property bool transparent(bool isTransparent)
 ```
 Is the layer transparent or not?
+* **NOTE:** There is no such thing as opacity. Transparency only means that blanks, `' '`, are seethrough.
 
 ---
 
