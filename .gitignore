@@ -7,3 +7,6 @@ __dummy.html
 *.exe
 dub.userprefs
 dub.selections.json
+clayers
+libclayers*
+

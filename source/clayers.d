@@ -8,7 +8,7 @@ class ConsoleWindow{
 
 	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
 	protected ConsoleLayer[] layers;
-	protected char[][] slots;
+	protected dchar[][] slots;
  	
 	protected XY size;
 
@@ -16,13 +16,14 @@ class ConsoleWindow{
 		this.size = size;
 
 		//Sets the width and height.
-		slots = new char[][](size.x, size.y);	
+		slots = new dchar[][](size.x, size.y);	
 		//Set every tile to be the background.
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = ' ';
 	}
 	
 	version(Windows){
 		import core.sys.windows.windows;
+		CONSOLE_SCREEN_BUFFER_INFO info;
 		HANDLE hOutput = null, hInput = null;
 	}
 	/**
@@ -61,9 +62,9 @@ class ConsoleWindow{
 	}
 	
 	/**
-	 * Returns the char at the specific X and Y coordinates in the window.
+	 * Returns the dchar at the specific X and Y coordinates in the window.
 	*/
-	char getSlot(XY location){
+	dchar getSlot(XY location){
 		return snap()[location.x][location.y];
 	}
 
@@ -71,7 +72,7 @@ class ConsoleWindow{
 	* Prints all the layers in the correct order.
 	*/
 	void print(){
-		char[][] writes = snap();
+		dchar[][] writes = snap();
 
 		string print;
 		foreach(y; 0 .. size.y){
@@ -108,18 +109,18 @@ class ConsoleWindow{
 	/*
 	* Returns a 'snap', snapshot, of all the layers merged.
 	*/
-	char[][] snap(){
+	dchar[][] snap(){
 		//Thanks ketmar from #d
-		char[][] snap = new char[][](slots.length, slots[0].length);
+		dchar[][] snap = new dchar[][](slots.length, slots[0].length);
 		foreach (x, col; snap) col[] = slots[x][];
 
 		foreach(a; 0 .. layers.length)
-            if(layers[a].visible){
-                foreach(x; 0 .. layers[a].size.x)
-                foreach(y; 0 .. layers[a].size.y)
-                    if(!(layers[a].transparent && layers[a].getSlot(XY(x,y)) == ' '))
-                        snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
-        }
+			if(layers[a].visible){
+				foreach(x; 0 .. layers[a].size.x)
+				foreach(y; 0 .. layers[a].size.y)
+					if(!(layers[a].transparent && layers[a].getSlot(XY(x,y)) == ' '))
+						snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+		}
 		return snap;
 	}
 
@@ -164,48 +165,48 @@ class ConsoleLayer : ConsoleWindow{
 		super(size);
 	}
 
-    @property{
-        /**
-        * Is the layer transparent or not?
-        */
-        bool transparent(){
-            return transparent_;
-        }
-        
-        bool transparent(bool isTransparent){
-            return transparent_ = isTransparent;
-        }
-        
-        /**
-        * Is the layer visible or not?
-        */
-        bool visible(){
-            return visible_;
-        }
-        
-        bool visible(bool isVisible){
-            return visible_ = isVisible;
-        }
-    }
+	@property{
+		/**
+		* Is the layer transparent or not?
+		*/
+		bool transparent(){
+			return transparent_;
+		}
+		
+		bool transparent(bool isTransparent){
+			return transparent_ = isTransparent;
+		}
+		
+		/**
+		* Is the layer visible or not?
+		*/
+		bool visible(){
+			return visible_;
+		}
+		
+		bool visible(bool isVisible){
+			return visible_ = isVisible;
+		}
+	}
 	
 	/*
-	* Returns the char at specified slot.
+	* Returns the dchar at specified slot.
 	*
 	* Params:
 	*	 location = X and Y coordinates of the slot to return.
 	*/	
-	override char getSlot(XY location){
+	override dchar getSlot(XY location){
 		return slots[location.x][location.y];
 	}
 	
-    /*
+	/*
 	* Functions like std.stdio.write(), only it writes in the layer.
 	*
 	* Params:
 	*	 xy = X and Y positions of where to write.
 	*	 c = The character to write.
 	*/
-	void layerWrite(XY xy, char c){
+	void layerWrite(XY xy, dchar c){
 		try{
 			slots[xy.x][xy.y] = c;
 		}catch{ /* Well, I don't really know what to do then. TODO: Log maybe? */ }
@@ -227,12 +228,12 @@ class ConsoleLayer : ConsoleWindow{
 		}catch{ /* If the string 'overflows', what to do? TODO: Log maybe? */ }
 	}
 
-    /**
-    * Calls removeLayer(this);
-    */
-    void remove(){
-        removeLayer(this);
-    }
+	/**
+	* Calls removeLayer(this);
+	*/
+	void remove(){
+		removeLayer(this);
+	}
 	
 	/**
 	* Moves the layer to the front.
@@ -241,7 +242,7 @@ class ConsoleLayer : ConsoleWindow{
 	*	 cl = Layer to be moved to the front.
 	*/
 	void moveLayerFront(){
-        moveLayerForward(layers.length);
+		moveLayerForward(layers.length);
 	}
 
 	/**
@@ -251,7 +252,7 @@ class ConsoleLayer : ConsoleWindow{
 	*	 cl = Layer to be moved to the back.
 	*/
 	void moveLayerBack(){
-        moveLayerBackward(layers.length);
+		moveLayerBackward(layers.length);
 	}
 
 	/*
