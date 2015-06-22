@@ -9,40 +9,80 @@ class ConsoleWindow{
 	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
 	protected ConsoleLayer[] layers;
 	protected dchar[][] slots;
- 	
+
+	protected dchar[][] changeBuffert;
+	
 	protected XY size;
 
 	this(XY size = XY(80, 24)){
+
+		//To get access to the windows console
+		version(Windows){
+			hOutput = GetStdHandle(handle);
+		}
+
 		this.size = size;
 
 		//Sets the width and height.
 		slots = new dchar[][](size.x, size.y);	
 		//Set every tile to be the background.
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = ' ';
-	}
-	
-	version(Windows){
-		import core.sys.windows.windows;
-		CONSOLE_SCREEN_BUFFER_INFO info;
-		HANDLE hOutput = null, hInput = null;
-	}
-	/**
-	 * Sets the cursor's position.
-	 * NOTE: This should only be used by clayers.
-	 *
-	 * Params:
-	 *	XY = X and Y coordinates where the cursor should be put.
-	*/
-	private void scp(XY pos){
-		version(Windows){
-			COORD c = {cast(short)min(width,max(0,pos.x)), cast(short)max(0,pos.y)};
-			stdout.flush();
-			SetConsoleCursorPosition(hOutput, c);
-		}else version(Posix){
-			stdout.flush();
-			writef("\033[%d;%df", pos.y + 1, pos.x + 1);
+
+		//Print out all the tiles to remove junk characters
+		scp(XY(0, 0));
+
+		foreach(y; 0 .. size.y)
+		foreach(x; 0 .. size.x){
+			scp(XY(x,y));
+			write(slots[x][y]);
 		}
-		//All code in this function is stolen from setCursorPos() from ConsoleD.
+
+		//Save to the change buffert
+		changeBuffert = slots;
+	}
+
+	//Functions to operate correctly with console/terminal
+	private{
+		version(Windows){
+			import core.sys.windows.windows;
+			import std.algorithm;
+			uint handle = STD_ERROR_HANDLE;
+			CONSOLE_SCREEN_BUFFER_INFO info;
+			HANDLE hOutput;
+			
+			XY screenSize() @property{
+		        GetConsoleScreenBufferInfo( hOutput, &info );
+		        return XY(info.srWindow.Right  - info.srWindow.Left + 1, info.srWindow.Bottom - info.srWindow.Top  + 1);
+			}
+
+			/**
+			* Set cursor position
+			*/
+			void scp(XY pos){
+				COORD c = {cast(short)min(screenSize.x, max(0,pos.x)), cast(short)max(0, pos.y)};
+				stdout.flush();
+				SetConsoleCursorPosition(hOutput, c);
+			}
+
+		}else version(Posix){
+
+			import core.sys.posix.sys.ioctl;
+
+			//FIXME: Possible error on Linux
+			XY screenSize() @property{
+				winsize w;
+		        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+		        return XY(w.ws_col, w.ws_row);
+			}
+
+			/**
+			* Set cursor position
+			*/
+			void scp(XY pos){
+				stdout.flush();
+				writef("\033[%d;%df", pos.y + 1, pos.x + 1);
+			}
+		}
 	}
 
 	@property{
@@ -74,36 +114,19 @@ class ConsoleWindow{
 	void print(){
 		dchar[][] writes = snap();
 
-		string print;
-		foreach(y; 0 .. size.y){
-			foreach(x; 0 .. size.x){
-				print ~= writes[x][y];
+		if(writes == changeBuffert)
+			return;
+
+		foreach(y; 0 .. size.y)
+		foreach(x; 0 .. size.x){
+			if(writes[x][y] != changeBuffert[x][y]){
+				scp(XY(x,y));
+				write(writes[x][y]);
 			}
-
-			scp(XY(0, y));
-			std.stdio.write(print);
-			print = null;
 		}
+
+		changeBuffert = snap();
 		scp(XY(0, 0));
-
-		/+ The version below is about ~15 times faster, but unreliable.
-		 + 
-		 + For instance, once a whole 80 character line has been
-		 + printed the console wraps around and begins on a new
-		 + line. And then the command to send a newline happens
-		 + which causes empty lines to appear.
-		 +
-		 + TODO: I guess I could check if the width is less than the window width minus one (somehow), and only then append the '\n'. 
-
-		string print2;
-		foreach(int y; 0 .. size.y){
-			foreach(int x; 0 .. size.x)
-				print2 ~= writes[x][y];
-			print2 ~= "\n";
-		}
-		setCursorPos(0, 0);
-		write(print2);
-		+/
 	}
 	
 	/*
