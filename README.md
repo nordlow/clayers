@@ -14,6 +14,6 @@ void main(){
 ```
 
 ## Extra
-* [Usage](../blob/master/doc/USAGE.md) - Quick guide of how to use clayers.
-* [Reference](../blob/master/doc/REFERENCE.md) - Reference list of all the functions.
+* [Usage](../master/doc/USAGE.md) - Quick guide of how to use clayers.
+* [Reference](../master/doc/REFERENCE.md) - Reference list of all the functions.
 
