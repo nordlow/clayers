@@ -66,7 +66,7 @@ class ConsoleWindow{
 
 		}else version(Posix){
 
-			import core.sys.posix.sys.ioctl;
+            import core.sys.posix.sys.ioctl, core.sys.posix.unistd : STDOUT_FILENO;
 
 			//FIXME: Possible error on Linux
 			XY screenSize() @property{

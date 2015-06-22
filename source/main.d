@@ -23,6 +23,6 @@ void main(){
 	foreach(y; 0 .. 5)  layer3.layerWrite(XY(0, y), "---------------");
 
 	window.print();
-	window.removeLayer(layer3);
-	window.print();
+    layer3.visible(false);
+    window.print();
 }
