@@ -1,0 +1,601 @@
+Testing on Windows
+(Windows) 0 slots:
+			SCP heavy: TickDuration(2)
+			liner:     TickDuration(0)
+(Windows) 1 slots:
+			SCP heavy: TickDuration(789)
+			liner:     TickDuration(232)
+(Windows) 2 slots:
+			SCP heavy: TickDuration(381)
+			liner:     TickDuration(435)
+(Windows) 3 slots:
+			SCP heavy: TickDuration(558)
+			liner:     TickDuration(628)
+(Windows) 4 slots:
+			SCP heavy: TickDuration(742)
+			liner:     TickDuration(853)
+(Windows) 5 slots:
+			SCP heavy: TickDuration(921)
+			liner:     TickDuration(1065)
+(Windows) 6 slots:
+			SCP heavy: TickDuration(1100)
+			liner:     TickDuration(1193)
+(Windows) 7 slots:
+			SCP heavy: TickDuration(1407)
+			liner:     TickDuration(1467)
+(Windows) 8 slots:
+			SCP heavy: TickDuration(1523)
+			liner:     TickDuration(1709)
+(Windows) 9 slots:
+			SCP heavy: TickDuration(1700)
+			liner:     TickDuration(1927)
+(Windows) 10 slots:
+			SCP heavy: TickDuration(1954)
+			liner:     TickDuration(2144)
+(Windows) 11 slots:
+			SCP heavy: TickDuration(2081)
+			liner:     TickDuration(2197)
+(Windows) 12 slots:
+			SCP heavy: TickDuration(2168)
+			liner:     TickDuration(2727)
+(Windows) 13 slots:
+			SCP heavy: TickDuration(4003)
+			liner:     TickDuration(2584)
+(Windows) 14 slots:
+			SCP heavy: TickDuration(2823)
+			liner:     TickDuration(2714)
+(Windows) 15 slots:
+			SCP heavy: TickDuration(2680)
+			liner:     TickDuration(2958)
+(Windows) 16 slots:
+			SCP heavy: TickDuration(3160)
+			liner:     TickDuration(3313)
+(Windows) 17 slots:
+			SCP heavy: TickDuration(3270)
+			liner:     TickDuration(3251)
+(Windows) 18 slots:
+			SCP heavy: TickDuration(3281)
+			liner:     TickDuration(3703)
+(Windows) 19 slots:
+			SCP heavy: TickDuration(16647)
+			liner:     TickDuration(3698)
+(Windows) 20 slots:
+			SCP heavy: TickDuration(3600)
+			liner:     TickDuration(3835)
+(Windows) 21 slots:
+			SCP heavy: TickDuration(3741)
+			liner:     TickDuration(4134)
+(Windows) 22 slots:
+			SCP heavy: TickDuration(4268)
+			liner:     TickDuration(4577)
+(Windows) 23 slots:
+			SCP heavy: TickDuration(6884)
+			liner:     TickDuration(4580)
+(Windows) 24 slots:
+			SCP heavy: TickDuration(4614)
+			liner:     TickDuration(4733)
+(Windows) 25 slots:
+			SCP heavy: TickDuration(4807)
+			liner:     TickDuration(5108)
+(Windows) 26 slots:
+			SCP heavy: TickDuration(4713)
+			liner:     TickDuration(5090)
+(Windows) 27 slots:
+			SCP heavy: TickDuration(6540)
+			liner:     TickDuration(5356)
+(Windows) 28 slots:
+			SCP heavy: TickDuration(5009)
+			liner:     TickDuration(5523)
+(Windows) 29 slots:
+			SCP heavy: TickDuration(5242)
+			liner:     TickDuration(5846)
+(Windows) 30 slots:
+			SCP heavy: TickDuration(5430)
+			liner:     TickDuration(7863)
+(Windows) 31 slots:
+			SCP heavy: TickDuration(5701)
+			liner:     TickDuration(6495)
+(Windows) 32 slots:
+			SCP heavy: TickDuration(5669)
+			liner:     TickDuration(6257)
+(Windows) 33 slots:
+			SCP heavy: TickDuration(5943)
+			liner:     TickDuration(6569)
+(Windows) 34 slots:
+			SCP heavy: TickDuration(14894)
+			liner:     TickDuration(7325)
+(Windows) 35 slots:
+			SCP heavy: TickDuration(6935)
+			liner:     TickDuration(7609)
+(Windows) 36 slots:
+			SCP heavy: TickDuration(6518)
+			liner:     TickDuration(9521)
+(Windows) 37 slots:
+			SCP heavy: TickDuration(7123)
+			liner:     TickDuration(7196)
+(Windows) 38 slots:
+			SCP heavy: TickDuration(6875)
+			liner:     TickDuration(7534)
+(Windows) 39 slots:
+			SCP heavy: TickDuration(9127)
+			liner:     TickDuration(42772)
+(Windows) 40 slots:
+			SCP heavy: TickDuration(7291)
+			liner:     TickDuration(7916)
+(Windows) 41 slots:
+			SCP heavy: TickDuration(7489)
+			liner:     TickDuration(8551)
+(Windows) 42 slots:
+			SCP heavy: TickDuration(7876)
+			liner:     TickDuration(9663)
+(Windows) 43 slots:
+			SCP heavy: TickDuration(7809)
+			liner:     TickDuration(8538)
+(Windows) 44 slots:
+			SCP heavy: TickDuration(8225)
+			liner:     TickDuration(11190)
+(Windows) 45 slots:
+			SCP heavy: TickDuration(8336)
+			liner:     TickDuration(9477)
+(Windows) 46 slots:
+			SCP heavy: TickDuration(8460)
+			liner:     TickDuration(9187)
+(Windows) 47 slots:
+			SCP heavy: TickDuration(10709)
+			liner:     TickDuration(9399)
+(Windows) 48 slots:
+			SCP heavy: TickDuration(8964)
+			liner:     TickDuration(9580)
+(Windows) 49 slots:
+			SCP heavy: TickDuration(10710)
+			liner:     TickDuration(10330)
+(Windows) 50 slots:
+			SCP heavy: TickDuration(9118)
+			liner:     TickDuration(9883)
+(Windows) 51 slots:
+			SCP heavy: TickDuration(11375)
+			liner:     TickDuration(10594)
+(Windows) 52 slots:
+			SCP heavy: TickDuration(9971)
+			liner:     TickDuration(10183)
+(Windows) 53 slots:
+			SCP heavy: TickDuration(12119)
+			liner:     TickDuration(10701)
+(Windows) 54 slots:
+			SCP heavy: TickDuration(10146)
+			liner:     TickDuration(11098)
+(Windows) 55 slots:
+			SCP heavy: TickDuration(12009)
+			liner:     TickDuration(10593)
+(Windows) 56 slots:
+			SCP heavy: TickDuration(10675)
+			liner:     TickDuration(11195)
+(Windows) 57 slots:
+			SCP heavy: TickDuration(13064)
+			liner:     TickDuration(11703)
+(Windows) 58 slots:
+			SCP heavy: TickDuration(10936)
+			liner:     TickDuration(11579)
+(Windows) 59 slots:
+			SCP heavy: TickDuration(14432)
+			liner:     TickDuration(11712)
+(Windows) 60 slots:
+			SCP heavy: TickDuration(11981)
+			liner:     TickDuration(13225)
+(Windows) 61 slots:
+			SCP heavy: TickDuration(11813)
+			liner:     TickDuration(12138)
+(Windows) 62 slots:
+			SCP heavy: TickDuration(14127)
+			liner:     TickDuration(12580)
+(Windows) 63 slots:
+			SCP heavy: TickDuration(12234)
+			liner:     TickDuration(12601)
+(Windows) 64 slots:
+			SCP heavy: TickDuration(14544)
+			liner:     TickDuration(12909)
+(Windows) 65 slots:
+			SCP heavy: TickDuration(12522)
+			liner:     TickDuration(14439)
+(Windows) 66 slots:
+			SCP heavy: TickDuration(12920)
+			liner:     TickDuration(13531)
+(Windows) 67 slots:
+			SCP heavy: TickDuration(14438)
+			liner:     TickDuration(13494)
+(Windows) 68 slots:
+			SCP heavy: TickDuration(13501)
+			liner:     TickDuration(16004)
+(Windows) 69 slots:
+			SCP heavy: TickDuration(13935)
+			liner:     TickDuration(13942)
+(Windows) 70 slots:
+			SCP heavy: TickDuration(16344)
+			liner:     TickDuration(14449)
+(Windows) 71 slots:
+			SCP heavy: TickDuration(14054)
+			liner:     TickDuration(16035)
+(Windows) 72 slots:
+			SCP heavy: TickDuration(14530)
+			liner:     TickDuration(16192)
+(Windows) 73 slots:
+			SCP heavy: TickDuration(15246)
+			liner:     TickDuration(14497)
+(Windows) 74 slots:
+			SCP heavy: TickDuration(17158)
+			liner:     TickDuration(15783)
+(Windows) 75 slots:
+			SCP heavy: TickDuration(15143)
+			liner:     TickDuration(17826)
+(Windows) 76 slots:
+			SCP heavy: TickDuration(15544)
+			liner:     TickDuration(17202)
+(Windows) 77 slots:
+			SCP heavy: TickDuration(15480)
+			liner:     TickDuration(15987)
+(Windows) 78 slots:
+			SCP heavy: TickDuration(17897)
+			liner:     TickDuration(16871)
+(Windows) 79 slots:
+			SCP heavy: TickDuration(18074)
+			liner:     TickDuration(16842)
+(Windows) 80 slots:
+			SCP heavy: TickDuration(16397)
+			liner:     TickDuration(18829)
+(Windows) 81 slots:
+			SCP heavy: TickDuration(16942)
+			liner:     TickDuration(18415)
+(Windows) 82 slots:
+			SCP heavy: TickDuration(17010)
+			liner:     TickDuration(17096)
+(Windows) 83 slots:
+			SCP heavy: TickDuration(19041)
+			liner:     TickDuration(17251)
+(Windows) 84 slots:
+			SCP heavy: TickDuration(19331)
+			liner:     TickDuration(17751)
+(Windows) 85 slots:
+			SCP heavy: TickDuration(19750)
+			liner:     TickDuration(18190)
+(Windows) 86 slots:
+			SCP heavy: TickDuration(19992)
+			liner:     TickDuration(18573)
+(Windows) 87 slots:
+			SCP heavy: TickDuration(18368)
+			liner:     TickDuration(21147)
+(Windows) 88 slots:
+			SCP heavy: TickDuration(18707)
+			liner:     TickDuration(21251)
+(Windows) 89 slots:
+			SCP heavy: TickDuration(18863)
+			liner:     TickDuration(21670)
+(Windows) 90 slots:
+			SCP heavy: TickDuration(19131)
+			liner:     TickDuration(21258)
+(Windows) 91 slots:
+			SCP heavy: TickDuration(19388)
+			liner:     TickDuration(21525)
+(Windows) 92 slots:
+			SCP heavy: TickDuration(19756)
+			liner:     TickDuration(21735)
+(Windows) 93 slots:
+			SCP heavy: TickDuration(20033)
+			liner:     TickDuration(22400)
+(Windows) 94 slots:
+			SCP heavy: TickDuration(20446)
+			liner:     TickDuration(23128)
+(Windows) 95 slots:
+			SCP heavy: TickDuration(20626)
+			liner:     TickDuration(22919)
+(Windows) 96 slots:
+			SCP heavy: TickDuration(21209)
+			liner:     TickDuration(23071)
+(Windows) 97 slots:
+			SCP heavy: TickDuration(21705)
+			liner:     TickDuration(23155)
+(Windows) 98 slots:
+			SCP heavy: TickDuration(22129)
+			liner:     TickDuration(23094)
+(Windows) 99 slots:
+			SCP heavy: TickDuration(23831)
+			liner:     TickDuration(22024)
+(Windows) 100 slots:
+			SCP heavy: TickDuration(24539)
+			liner:     TickDuration(22329)
+(Windows) 101 slots:
+			SCP heavy: TickDuration(25173)
+			liner:     TickDuration(23417)
+(Windows) 102 slots:
+			SCP heavy: TickDuration(24143)
+			liner:     TickDuration(23862)
+(Windows) 103 slots:
+			SCP heavy: TickDuration(24471)
+			liner:     TickDuration(25344)
+(Windows) 104 slots:
+			SCP heavy: TickDuration(23285)
+			liner:     TickDuration(25618)
+(Windows) 105 slots:
+			SCP heavy: TickDuration(24027)
+			liner:     TickDuration(26058)
+(Windows) 106 slots:
+			SCP heavy: TickDuration(25673)
+			liner:     TickDuration(24198)
+(Windows) 107 slots:
+			SCP heavy: TickDuration(26214)
+			liner:     TickDuration(25282)
+(Windows) 108 slots:
+			SCP heavy: TickDuration(26122)
+			liner:     TickDuration(27451)
+(Windows) 109 slots:
+			SCP heavy: TickDuration(24815)
+			liner:     TickDuration(45618)
+(Windows) 110 slots:
+			SCP heavy: TickDuration(35528)
+			liner:     TickDuration(82567)
+(Windows) 111 slots:
+			SCP heavy: TickDuration(31092)
+			liner:     TickDuration(29811)
+(Windows) 112 slots:
+			SCP heavy: TickDuration(27603)
+			liner:     TickDuration(58167)
+(Windows) 113 slots:
+			SCP heavy: TickDuration(25972)
+			liner:     TickDuration(28049)
+(Windows) 114 slots:
+			SCP heavy: TickDuration(28011)
+			liner:     TickDuration(27065)
+(Windows) 115 slots:
+			SCP heavy: TickDuration(29237)
+			liner:     TickDuration(29100)
+(Windows) 116 slots:
+			SCP heavy: TickDuration(27112)
+			liner:     TickDuration(29440)
+(Windows) 117 slots:
+			SCP heavy: TickDuration(28878)
+			liner:     TickDuration(28796)
+(Windows) 118 slots:
+			SCP heavy: TickDuration(32019)
+			liner:     TickDuration(30351)
+(Windows) 119 slots:
+			SCP heavy: TickDuration(28525)
+			liner:     TickDuration(31365)
+(Windows) 120 slots:
+			SCP heavy: TickDuration(31312)
+			liner:     TickDuration(30603)
+(Windows) 121 slots:
+			SCP heavy: TickDuration(29749)
+			liner:     TickDuration(30946)
+(Windows) 122 slots:
+			SCP heavy: TickDuration(30841)
+			liner:     TickDuration(31142)
+(Windows) 123 slots:
+			SCP heavy: TickDuration(31568)
+			liner:     TickDuration(32079)
+(Windows) 124 slots:
+			SCP heavy: TickDuration(31962)
+			liner:     TickDuration(31982)
+(Windows) 125 slots:
+			SCP heavy: TickDuration(30615)
+			liner:     TickDuration(34001)
+(Windows) 126 slots:
+			SCP heavy: TickDuration(31920)
+			liner:     TickDuration(32705)
+(Windows) 127 slots:
+			SCP heavy: TickDuration(31309)
+			liner:     TickDuration(33598)
+(Windows) 128 slots:
+			SCP heavy: TickDuration(33611)
+			liner:     TickDuration(33718)
+(Windows) 129 slots:
+			SCP heavy: TickDuration(32215)
+			liner:     TickDuration(33212)
+(Windows) 130 slots:
+			SCP heavy: TickDuration(34065)
+			liner:     TickDuration(33871)
+(Windows) 131 slots:
+			SCP heavy: TickDuration(34509)
+			liner:     TickDuration(33295)
+(Windows) 132 slots:
+			SCP heavy: TickDuration(34035)
+			liner:     TickDuration(35070)
+(Windows) 133 slots:
+			SCP heavy: TickDuration(34436)
+			liner:     TickDuration(36453)
+(Windows) 134 slots:
+			SCP heavy: TickDuration(35436)
+			liner:     TickDuration(34353)
+(Windows) 135 slots:
+			SCP heavy: TickDuration(35271)
+			liner:     TickDuration(36365)
+(Windows) 136 slots:
+			SCP heavy: TickDuration(35635)
+			liner:     TickDuration(37353)
+(Windows) 137 slots:
+			SCP heavy: TickDuration(37387)
+			liner:     TickDuration(37940)
+(Windows) 138 slots:
+			SCP heavy: TickDuration(36075)
+			liner:     TickDuration(38184)
+(Windows) 139 slots:
+			SCP heavy: TickDuration(37919)
+			liner:     TickDuration(38497)
+(Windows) 140 slots:
+			SCP heavy: TickDuration(38754)
+			liner:     TickDuration(40062)
+(Windows) 141 slots:
+			SCP heavy: TickDuration(39467)
+			liner:     TickDuration(39120)
+(Windows) 142 slots:
+			SCP heavy: TickDuration(39500)
+			liner:     TickDuration(40079)
+(Windows) 143 slots:
+			SCP heavy: TickDuration(39235)
+			liner:     TickDuration(40276)
+(Windows) 144 slots:
+			SCP heavy: TickDuration(40273)
+			liner:     TickDuration(40544)
+(Windows) 145 slots:
+			SCP heavy: TickDuration(39980)
+			liner:     TickDuration(40327)
+(Windows) 146 slots:
+			SCP heavy: TickDuration(40915)
+			liner:     TickDuration(41743)
+(Windows) 147 slots:
+			SCP heavy: TickDuration(40637)
+			liner:     TickDuration(45559)
+(Windows) 148 slots:
+			SCP heavy: TickDuration(41179)
+			liner:     TickDuration(42817)
+(Windows) 149 slots:
+			SCP heavy: TickDuration(41594)
+			liner:     TickDuration(63997)
+(Windows) 150 slots:
+			SCP heavy: TickDuration(42329)
+			liner:     TickDuration(42938)
+(Windows) 151 slots:
+			SCP heavy: TickDuration(41892)
+			liner:     TickDuration(43178)
+(Windows) 152 slots:
+			SCP heavy: TickDuration(43172)
+			liner:     TickDuration(44135)
+(Windows) 153 slots:
+			SCP heavy: TickDuration(44126)
+			liner:     TickDuration(43768)
+(Windows) 154 slots:
+			SCP heavy: TickDuration(43338)
+			liner:     TickDuration(44788)
+(Windows) 155 slots:
+			SCP heavy: TickDuration(43846)
+			liner:     TickDuration(44618)
+(Windows) 156 slots:
+			SCP heavy: TickDuration(44123)
+			liner:     TickDuration(45474)
+(Windows) 157 slots:
+			SCP heavy: TickDuration(44874)
+			liner:     TickDuration(45782)
+(Windows) 158 slots:
+			SCP heavy: TickDuration(46876)
+			liner:     TickDuration(45779)
+(Windows) 159 slots:
+			SCP heavy: TickDuration(45711)
+			liner:     TickDuration(46732)
+(Windows) 160 slots:
+			SCP heavy: TickDuration(45088)
+			liner:     TickDuration(46454)
+(Windows) 161 slots:
+			SCP heavy: TickDuration(46392)
+			liner:     TickDuration(46684)
+(Windows) 162 slots:
+			SCP heavy: TickDuration(46251)
+			liner:     TickDuration(48958)
+(Windows) 163 slots:
+			SCP heavy: TickDuration(47216)
+			liner:     TickDuration(47802)
+(Windows) 164 slots:
+			SCP heavy: TickDuration(47480)
+			liner:     TickDuration(48154)
+(Windows) 165 slots:
+			SCP heavy: TickDuration(47456)
+			liner:     TickDuration(48598)
+(Windows) 166 slots:
+			SCP heavy: TickDuration(47912)
+			liner:     TickDuration(50530)
+(Windows) 167 slots:
+			SCP heavy: TickDuration(48565)
+			liner:     TickDuration(49349)
+(Windows) 168 slots:
+			SCP heavy: TickDuration(48338)
+			liner:     TickDuration(49411)
+(Windows) 169 slots:
+			SCP heavy: TickDuration(50333)
+			liner:     TickDuration(51455)
+(Windows) 170 slots:
+			SCP heavy: TickDuration(49904)
+			liner:     TickDuration(50832)
+(Windows) 171 slots:
+			SCP heavy: TickDuration(49914)
+			liner:     TickDuration(51505)
+(Windows) 172 slots:
+			SCP heavy: TickDuration(51461)
+			liner:     TickDuration(51749)
+(Windows) 173 slots:
+			SCP heavy: TickDuration(50453)
+			liner:     TickDuration(51234)
+(Windows) 174 slots:
+			SCP heavy: TickDuration(55350)
+			liner:     TickDuration(56230)
+(Windows) 175 slots:
+			SCP heavy: TickDuration(51350)
+			liner:     TickDuration(52505)
+(Windows) 176 slots:
+			SCP heavy: TickDuration(53483)
+			liner:     TickDuration(67865)
+(Windows) 177 slots:
+			SCP heavy: TickDuration(53239)
+			liner:     TickDuration(53871)
+(Windows) 178 slots:
+			SCP heavy: TickDuration(52445)
+			liner:     TickDuration(54009)
+(Windows) 179 slots:
+			SCP heavy: TickDuration(55350)
+			liner:     TickDuration(54082)
+(Windows) 180 slots:
+			SCP heavy: TickDuration(53513)
+			liner:     TickDuration(54317)
+(Windows) 181 slots:
+			SCP heavy: TickDuration(54492)
+			liner:     TickDuration(54881)
+(Windows) 182 slots:
+			SCP heavy: TickDuration(54409)
+			liner:     TickDuration(57206)
+(Windows) 183 slots:
+			SCP heavy: TickDuration(55269)
+			liner:     TickDuration(57153)
+(Windows) 184 slots:
+			SCP heavy: TickDuration(57312)
+			liner:     TickDuration(56419)
+(Windows) 185 slots:
+			SCP heavy: TickDuration(55203)
+			liner:     TickDuration(58031)
+(Windows) 186 slots:
+			SCP heavy: TickDuration(55575)
+			liner:     TickDuration(56947)
+(Windows) 187 slots:
+			SCP heavy: TickDuration(58509)
+			liner:     TickDuration(56913)
+(Windows) 188 slots:
+			SCP heavy: TickDuration(57796)
+			liner:     TickDuration(60278)
+(Windows) 189 slots:
+			SCP heavy: TickDuration(56867)
+			liner:     TickDuration(59869)
+(Windows) 190 slots:
+			SCP heavy: TickDuration(57518)
+			liner:     TickDuration(58531)
+(Windows) 191 slots:
+			SCP heavy: TickDuration(59422)
+			liner:     TickDuration(58829)
+(Windows) 192 slots:
+			SCP heavy: TickDuration(60153)
+			liner:     TickDuration(61189)
+(Windows) 193 slots:
+			SCP heavy: TickDuration(59373)
+			liner:     TickDuration(62192)
+(Windows) 194 slots:
+			SCP heavy: TickDuration(59827)
+			liner:     TickDuration(62558)
+(Windows) 195 slots:
+			SCP heavy: TickDuration(59699)
+			liner:     TickDuration(63276)
+(Windows) 196 slots:
+			SCP heavy: TickDuration(60608)
+			liner:     TickDuration(68652)
+(Windows) 197 slots:
+			SCP heavy: TickDuration(60581)
+			liner:     TickDuration(63226)
+(Windows) 198 slots:
+			SCP heavy: TickDuration(60922)
+			liner:     TickDuration(72681)
+(Windows) 199 slots:
+			SCP heavy: TickDuration(62841)
+			liner:     TickDuration(64303)

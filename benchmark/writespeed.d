@@ -45,7 +45,7 @@ void main(){
         string print;
         foreach(x; 0 .. a){
             print ~= '2';
-            scp(XY(0, y));
+            scp(XY(0, 1));
             write(print);
         }
         stdout.flush();
