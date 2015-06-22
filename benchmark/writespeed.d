@@ -18,7 +18,7 @@ void main(){
     }
 
     StopWatch s1, s2;
-    File file = File("writespeed_output", "w");
+    File file = File("output_writespeed_" ~ os, "w");
 
     file.write("Testing on ", os, "\n");
 
@@ -42,8 +42,7 @@ void main(){
         stdout.flush();
         s2.stop();
 
-        bool f = s1.peek() < s2.peek();
-        file.write("(", os, ") For ", a, " slots,\t", f ? "SCP heavy" : "liner    ", " is ", abs(s1.peek().msecs - s2.peek().msecs),  "\tmsecs faster, ", abs(s1.peek - s2.peek()), "\n");
+        file.write("(", os, ") ", a, " slots:\n\t\t\tSCP heavy: ", s1.peek(), "\n\t\t\tliner:     ", s2.peek(), "\n");
 
         s1.reset();
         s2.reset();
@@ -52,13 +51,14 @@ void main(){
 
 version(Windows){
     import core.sys.windows.windows;
+    import std.algorithm;
     CONSOLE_SCREEN_BUFFER_INFO info;
     HANDLE handleOut = null;
 }
 
 void scp(XY pos){
     version(Windows){
-        COORD c = {cast(short)min(width,max(0,pos.x)), cast(short)max(0,pos.y)};
+        COORD c = {cast(short)min(80, max(0,pos.x)), cast(short)max(0, pos.y)};
         stdout.flush();
         SetConsoleCursorPosition(handleOut, c);
     }else version(Posix){
