@@ -1,68 +1,53 @@
 import std.stdio;
 import std.datetime;
 import std.file;
+import std.math;
 
 struct XY{ size_t x,y; }
 
 void main(){
+    
+    string os = "unknown";
+    int amount = 200;
+
+    version(Windows){
+        os = "Windows";
+    }
+    version(Posix){
+        os = "Posix";
+    }
+
     StopWatch s1, s2;
+    File file = File("writespeed_output", "w");
 
-    int scpheavy, liner;
-    string filename = "writespeed_output_unknown";
-    version(Windows){
-        filename = "writespeed_output_windows";
-    }
-    version(Posix){
-        filename = "writespeed_output_linux";
-    }
+    file.write("Testing on ", os, "\n");
 
-    File file = File(filename, "w");
-
-    file.write("SCP = set cursor position\nliner = append to string, then write\n");
-    version(Windows){
-        file.write("Testing on Windows\n");
-    }
-    version(Posix){
-        file.write("Testing on Linux\n");
-    }
-
-    foreach(a; 0 .. 200){
+    foreach(a; 0 .. amount){
+        
         s1.start();
-
         foreach(x; 0 .. a){
             scp(XY(x, 0));
             write('1');
         }
-
+        stdout.flush();
         s1.stop();
 
         s2.start();
-
         string print;
         foreach(x; 0 .. a){
             print ~= '2';
             scp(XY(0, 1));
             write(print);
         }
-
+        stdout.flush();
         s2.stop();
 
         bool f = s1.peek() < s2.peek();
-        f ? ++scpheavy : ++liner;
-        file.write("For ", a, " slots, ", f ? "SCP heavy" : "liner", " is faster\n");
+        file.write("(", os, ") For ", a, " slots,\t", f ? "SCP heavy" : "liner    ", " is ", abs(s1.peek().msecs - s2.peek().msecs),  "\tmsecs faster, ", abs(s1.peek - s2.peek()), "\n");
 
         s1.reset();
         s2.reset();
     }
-
-    file.write("\nSCP was faster ", scpheavy, " times\nliner was faster ", liner, " times\n\n", scpheavy > liner ? "SCP heavy" : "liner", " is the fastest for ");
-    version(Windows){
-        file.write("Windows\n");
-    }
-    version(Posix){
-        file.write("Linux\n");
-    }
-
 }
 
 version(Windows){
