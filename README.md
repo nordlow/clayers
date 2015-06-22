@@ -15,7 +15,7 @@ void main(){
 	layer.layerWrite(XY(0, 0), "Hello World!");
 	layer.layerWrite(XY(7, 7), '*');
 
-	auto layer2 = new ConsoleLayer(XY(60, 0), XY(20, 24)); //A sidebar                                            
+	auto layer2 = new ConsoleLayer(XY(60, 0), XY(20, 24)); //A sidebar
 	auto layer3 = new ConsoleLayer(XY(50, 9), XY(15, 5)); //Small box
 
 	window.addLayer(layer2);
