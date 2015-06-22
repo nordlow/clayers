@@ -2,14 +2,14 @@
 ### class ```ConsoleWindow```
 
 ```d
-@propery size_t width()
+@property size_t width()
 ```
 Returns the width of the window/layer.
 
 ---
 
 ```d
-@propery size_t height()
+@property size_t height()
 ```
 Returns the width of the window/layer.
 
