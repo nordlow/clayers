@@ -51,8 +51,8 @@ class ConsoleWindow{
 			HANDLE hOutput;
 			
 			XY screenSize() @property{
-		        GetConsoleScreenBufferInfo( hOutput, &info );
-		        return XY(info.srWindow.Right  - info.srWindow.Left + 1, info.srWindow.Bottom - info.srWindow.Top  + 1);
+				GetConsoleScreenBufferInfo( hOutput, &info );
+				return XY(info.srWindow.Right  - info.srWindow.Left + 1, info.srWindow.Bottom - info.srWindow.Top  + 1);
 			}
 
 			/**
@@ -66,12 +66,12 @@ class ConsoleWindow{
 
 		}else version(Posix){
 
-            import core.sys.posix.sys.ioctl, core.sys.posix.unistd : STDOUT_FILENO;
+			import core.sys.posix.sys.ioctl, core.sys.posix.unistd : STDOUT_FILENO;
 
 			XY screenSize() @property{
 				winsize w;
-		        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-		        return XY(w.ws_col, w.ws_row);
+				ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+				return XY(w.ws_col, w.ws_row);
 			}
 
 			/**
@@ -124,7 +124,7 @@ class ConsoleWindow{
 			}
 		}
 
-		changeBuffert = snap();
+		changeBuffert = writes;
 		scp(XY(0, 0));
 	}
 	
@@ -183,7 +183,7 @@ class ConsoleLayer : ConsoleWindow{
 	this(XY location, XY size, bool transparent = false){
 		this.location = location;
 		this.transparent = transparent;
-
+		
 		super(size);
 	}
 
