@@ -5,8 +5,17 @@ import std.math;
 
 struct XY{ size_t x,y; }
 
+version(Windows){
+    import core.sys.windows.windows;
+    import std.algorithm;
+    uint handle = STD_ERROR_HANDLE;
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    HANDLE hOutput;
+}
+
 void main(){
-    
+    hOutput = GetStdHandle(handle);
+
     string os = "unknown";
     int amount = 200;
 
@@ -36,7 +45,7 @@ void main(){
         string print;
         foreach(x; 0 .. a){
             print ~= '2';
-            scp(XY(0, 1));
+            scp(XY(0, y));
             write(print);
         }
         stdout.flush();
@@ -49,16 +58,9 @@ void main(){
     }
 }
 
-version(Windows){
-    import core.sys.windows.windows;
-    import std.algorithm;
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    HANDLE hOutput = GetStdHandle(handle);
-}
-
 void scp(XY pos){
     version(Windows){
-        COORD c = {cast(short)min(80 /* TEMP */ ,max(0,pos.x)), cast(short)max(0,pos.y)};
+        COORD c = {cast(short)min(200 /* TEMP */ ,max(0,pos.x)), cast(short)max(0,pos.y)};
         stdout.flush();
         SetConsoleCursorPosition(hOutput, c);
     }else version(Posix){
