@@ -53,14 +53,14 @@ version(Windows){
     import core.sys.windows.windows;
     import std.algorithm;
     CONSOLE_SCREEN_BUFFER_INFO info;
-    HANDLE handleOut = null;
+    HANDLE hOutput = GetStdHandle(handle);
 }
 
 void scp(XY pos){
     version(Windows){
-        COORD c = {cast(short)min(80, max(0,pos.x)), cast(short)max(0, pos.y)};
+        COORD c = {cast(short)min(80 /* TEMP */ ,max(0,pos.x)), cast(short)max(0,pos.y)};
         stdout.flush();
-        SetConsoleCursorPosition(handleOut, c);
+        SetConsoleCursorPosition(hOutput, c);
     }else version(Posix){
         stdout.flush();
         writef("\033[%d;%df", pos.y + 1, pos.x + 1);
