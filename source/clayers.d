@@ -1,6 +1,13 @@
 ﻿module clayers;
 import std.stdio;
 import std.algorithm;
+import std.conv;
+
+/*
+    TODO
+    * Better logging
+    * Fix all uncertainties, aka other TODO's
+*/
 
 struct XY{size_t x,y;}
 
@@ -13,9 +20,11 @@ class ConsoleWindow{
 	protected dchar[][] changeBuffert;
 
     private File log;
+
 	this(XY size = XY(80, 24)){
 
-        log = File("clayers.log", "a+");
+        log = File("clayers.log", "w+");
+
 		//To get access to the windows console
 		version(Windows){
 			hOutput = GetStdHandle(handle);
@@ -40,6 +49,10 @@ class ConsoleWindow{
 		//Save to the change buffert
 		changeBuffert = slots;
 	}
+
+    void clayersLog(string s){
+        log.writeln(s);    
+    }
 
 	//Functions to operate correctly with console/terminal
 	private{
@@ -162,7 +175,7 @@ class ConsoleWindow{
 				return;
 			}
 		}
-		//TODO: Log if layer could not be removed.
+		clayersLog("A layer could not be removed.");
 	}
 
 }
@@ -222,7 +235,9 @@ class ConsoleLayer : ConsoleWindow{
 	void layerWrite(XY xy, dchar c){
 		try{
 			slots[xy.x][xy.y] = c;
-		}catch{ /* Well, I don't really know what to do then. TODO: Log maybe? */ }
+		}catch{
+            clayersLog("Warning: Failed to write " ~ text(c));
+        }
 	}
 
 	/*
@@ -235,7 +250,9 @@ class ConsoleLayer : ConsoleWindow{
 	void layerWrite(XY xy, char c){
 		try{
 			slots[xy.x][xy.y] = c;
-		}catch{ assert(0);/* Well, I don't really know what to do then. TODO: Log maybe? */ }
+		}catch{
+            clayersLog("Warning: Failed to write " ~ text(c));
+        }
 	}
 
 	/*
@@ -251,7 +268,7 @@ class ConsoleLayer : ConsoleWindow{
                 int split = cast(int)((xy.x + a) / size.x);
                 slots[(xy.x + a) % size.x][xy.y + split] = s[a];
             }catch{
-                write(s[a], "\n");/* If the string 'overflows', what to do? TODO: Log maybe? */
+                clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
             }
         }
 	}
