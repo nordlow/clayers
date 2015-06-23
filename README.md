@@ -1,5 +1,23 @@
 # clayers
-**clayers** (console layers) is an easy thing for handling various layers in a console environment. By letting you have multiple layers on top of each other, you can easily move the layers forth and back, make them "transparent", etc.
+clayers (**c**onsole **layers**) is a cross-platform console render library for game devs, supporting multiple layers, efficient rendering and easy management. Layers can be added, removed and rearranged as well as toggled between translucent and opaque. Rendering only writes out what has changed, minimizing rendering to as little and quick as possible.
+
+### Features
+
+##### Cross-platform
+
+* Works on Windows and POSIX (OS X, Linux, BSD, etc.)
+
+##### Layers
+
+* Sized and positioned
+* See-through, meaning whitspaces are transparent
+* Toggled visiblity
+* Can be moved forwards and backwards
+
+##### Rendering
+
+* Printing out all layers merged
+* Only writing out what has changed
 
 ## Demonstration
 ```d
