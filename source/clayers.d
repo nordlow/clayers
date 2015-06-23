@@ -8,14 +8,14 @@ class ConsoleWindow{
 
 	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
 	protected ConsoleLayer[] layers;
-	protected dchar[][] slots;
-
-	protected dchar[][] changeBuffert;
-	
 	protected XY size;
+	protected dchar[][] slots;
+	protected dchar[][] changeBuffert;
 
+    private File log;
 	this(XY size = XY(80, 24)){
 
+        log = File("clayers.log", "a+");
 		//To get access to the windows console
 		version(Windows){
 			hOutput = GetStdHandle(handle);
@@ -226,6 +226,19 @@ class ConsoleLayer : ConsoleWindow{
 	}
 
 	/*
+	* Functions like std.stdio.write(), only it writes in the layer.
+	*
+	* Params:
+	*	 xy = X and Y positions of where to write.
+	*	 c = The character to write.
+	*/
+	void layerWrite(XY xy, char c){
+		try{
+			slots[xy.x][xy.y] = c;
+		}catch{ assert(0);/* Well, I don't really know what to do then. TODO: Log maybe? */ }
+	}
+
+	/*
 	* Functions like std.stdio.write(), only it writes in the layer. Does wrap around badly, no overflow.
 	*
 	* Params:
@@ -233,12 +246,14 @@ class ConsoleLayer : ConsoleWindow{
 	*	 s = The string to be written.
 	*/
 	void layerWrite(XY xy, string s){
-		try{
-			foreach(a; 0 .. s.length){
-				int split = cast(int)((xy.x + a) / size.x);
-				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
-			}
-		}catch{ /* If the string 'overflows', what to do? TODO: Log maybe? */ }
+        foreach(a; 0 .. s.length){
+            try{
+                int split = cast(int)((xy.x + a) / size.x);
+                slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+            }catch{
+                write(s[a], "\n");/* If the string 'overflows', what to do? TODO: Log maybe? */
+            }
+        }
 	}
 
 	/**

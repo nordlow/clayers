@@ -16,9 +16,9 @@ Returns the width of the window/layer.
 ---
 
 ```d
-char getSlot(XY location)
+dchar getSlot(XY location)
 ```
-Returns the char at the specific X and Y coordinates in the window. 
+Returns the dchar at the specific X and Y coordinates in the window. 
 
 ---
 
@@ -30,7 +30,7 @@ Prints all the layers in the correct order.
 ---
 
 ```d
-char[][] snap()
+dchar[][] snap()
 ```
 Returns a 'snap', snapshot, of all the layers merged.
 
@@ -70,20 +70,15 @@ Is the layer visible or not?
 ---
 
 ```d
-override char getSlot(XY location)
+override dchar getSlot(XY location)
 ```
-Returns the char at specified slot.
+Returns the dchar at specified slot.
 
 ---
 
 ```d
+void layerWrite(XY xy, dchar c)
 void layerWrite(XY xy, char c)
-```
-Functions like ```std.stdio.write();```, only it writes in the layer.
-
----
-
-```d
 void layerWrite(XY xy, string s)
 ```
 Functions like ```std.stdio.write();```, only it writes in the layer. Does wrap around badly, no overflow.
