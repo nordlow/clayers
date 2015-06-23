@@ -65,15 +65,6 @@ class ConsoleWindow{
 			}
 
 		}else version(Posix){
-
-            import core.sys.posix.sys.ioctl, core.sys.posix.termios, core.sys.posix.unistd : STDOUT_FILENO;
-
-			XY screenSize() @property{
-				winsize w;
-				ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-				return XY(w.ws_col, w.ws_row);
-			}
-
 			/**
 			* Set cursor position
 			*/
