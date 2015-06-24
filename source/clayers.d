@@ -4,9 +4,9 @@ import std.algorithm;
 import std.conv;
 
 /*
-    TODO
-    * Better logging
-    * Fix all uncertainties, aka other TODO's
+	TODO
+	* Better logging
+	* Fix all uncertainties, aka other TODO's
 */
 
 struct XY{size_t x,y;}
@@ -19,11 +19,11 @@ class ConsoleWindow{
 	protected dchar[][] slots;
 	protected dchar[][] changeBuffert;
 
-    private File log;
+	private File log;
 
 	this(XY size = XY(80, 24)){
 
-        log = File("clayers.log", "w+");
+		log = File("clayers.log", "w+");
 
 		//To get access to the windows console
 		version(Windows){
@@ -50,9 +50,9 @@ class ConsoleWindow{
 		changeBuffert = slots;
 	}
 
-    void clayersLog(string s){
-        log.writeln(s);    
-    }
+	void clayersLog(string s){
+		log.writeln(s);	
+	}
 
 	//Functions to operate correctly with console/terminal
 	private{
@@ -152,8 +152,7 @@ class ConsoleWindow{
 
 	/**
 	* Adds a new layer.
-	* DO NOT USE `new ConsoleLayer(...)`, because there is no way to remove the
-	* layer otherwise.
+	* DO NOT USE `addLayer(new ConsoleLayer(...))`, because there is no way to remove the layer otherwise.
 	*
 	* Params:
 	*	 cl = Should be a already defined layer.
@@ -232,12 +231,12 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 c = The character to write.
 	*/
-	void layerWrite(XY xy, dchar c){
+	void write(XY xy, dchar c){
 		try{
 			slots[xy.x][xy.y] = c;
 		}catch{
-            clayersLog("Warning: Failed to write " ~ text(c));
-        }
+			clayersLog("Warning: Failed to write " ~ text(c));
+		}
 	}
 
 	/*
@@ -247,12 +246,12 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 c = The character to write.
 	*/
-	void layerWrite(XY xy, char c){
+	void write(XY xy, char c){
 		try{
 			slots[xy.x][xy.y] = c;
 		}catch{
-            clayersLog("Warning: Failed to write " ~ text(c));
-        }
+			clayersLog("Warning: Failed to write " ~ text(c));
+		}
 	}
 
 	/*
@@ -262,24 +261,17 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 s = The string to be written.
 	*/
-	void layerWrite(XY xy, string s){
-        foreach(a; 0 .. s.length){
-            try{
-                int split = cast(int)((xy.x + a) / size.x);
-                slots[(xy.x + a) % size.x][xy.y + split] = s[a];
-            }catch{
-                clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
-            }
-        }
+	void write(XY xy, string s){
+		foreach(a; 0 .. s.length){
+			try{
+				int split = cast(int)((xy.x + a) / size.x);
+				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+			}catch{
+				clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
+			}
+		}
 	}
 
-	/**
-	* Calls removeLayer(this);
-	*/
-	void remove(){
-		removeLayer(this);
-	}
-	
 	/**
 	* Moves the layer to the front.
 	*
