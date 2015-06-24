@@ -57,7 +57,7 @@ Removes a specific layer
 @property bool transparent(bool isTransparent)
 ```
 Is the layer transparent or not?
-* **NOTE:** There is no such thing as opacity. Transparency only means that blanks, `' '`, are seethrough.
+* **NOTE:** There is no such thing as transparency. Transparency only means that blanks, `' '`, are seethrough.
 
 ---
 
@@ -86,27 +86,34 @@ Functions like ```std.stdio.write();```, only it writes in the layer. Does wrap 
 ---
 
 ```d
-void moveLayerFront()
+void remove()
+```
+Deletes the layer.
+
+---
+
+```d
+void moveToFront()
 ```
 Moves the layer to the front.
 
 ---
 
 ```d
-void moveLayerBack()
+void moveToBack()
 ```
 Moves the layer to the back.
 
 ---
 
 ```d
-void moveLayerForward(size_t amount = 1)
+void moveForward(size_t amount = 1)
 ```
 Moves the layer forward `amount` amount of times.
 
 ---
 
 ```d
-void moveLayerBackward(size_t amount = 1)
+void moveBackward(size_t amount = 1)
 ```
 Moves the layer backwards `amount` amount of times.

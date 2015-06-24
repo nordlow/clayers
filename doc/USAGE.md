@@ -5,6 +5,8 @@ auto window = new ConsoleWindow(XY(80, 24));
 ```
 XY(80,24) tells the size of the window (in amount of slots). You can make it smaller or bigger, but 80x24 is the standard console window size.
 
+#### This needs to be updated properly!
+<strike>
 Now add a new layer! It's easy, just do:
 ```d
 auto layer = new ConsoleLayer(XY(0, 0), XY(15, 15));
@@ -77,6 +79,6 @@ You know what? I really dislike that box so much I just want it gone from my lif
 ```d
 layer3.remove(); //or alternatively window.removeLayer(layer3);
 ```
-
+</strike>
 ###Amazing!
 If you followed though this little tutorial, you should be able to use clayers! Nice! ;-)

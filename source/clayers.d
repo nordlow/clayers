@@ -194,6 +194,13 @@ class ConsoleLayer : ConsoleWindow{
 		super(size);
 	}
 
+	protected void setParent(ConsoleWindow cw){
+		parent = cw;
+	}
+	protected void removeParent(){
+		parent = null;
+	}
+
 	@property{
 		/**
 		* Is the layer transparent or not?
@@ -216,13 +223,6 @@ class ConsoleLayer : ConsoleWindow{
 		bool visible(bool isVisible){
 			return visible_ = isVisible;
 		}
-	}
-
-	protected void setParent(ConsoleWindow cw){
-		parent = cw;
-	}
-	protected void removeParent(){
-		parent = null;
 	}
 	
 	/*
@@ -283,6 +283,12 @@ class ConsoleLayer : ConsoleWindow{
 		}
 	}
 
+	/**
+	* Remove the layer.
+	*/
+	void remove(){
+		parent.removeLayer(this);
+	}
 	/**
 	* Moves the layer to the front.
 	*
