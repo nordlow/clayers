@@ -77,18 +77,11 @@ Returns the dchar at specified slot.
 ---
 
 ```d
-void layerWrite(XY xy, dchar c)
-void layerWrite(XY xy, char c)
-void layerWrite(XY xy, string s)
+void write(XY xy, dchar c)
+void write(XY xy, char c)
+void write(XY xy, string s)
 ```
 Functions like ```std.stdio.write();```, only it writes in the layer. Does wrap around badly, no overflow.
-
----
-
-```d
-void remove()
-```
-Calls ```removeLayer(this);```.
 
 ---
 
