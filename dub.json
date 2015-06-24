@@ -3,6 +3,7 @@
 	"description": "Multiple console layer handling.",
 	"copyright": "Copyright © 2015, vladde",
 	"authors": ["vladdeSV"],
+	"license": "MIT",
 	"dependencies": {
 
 	}
