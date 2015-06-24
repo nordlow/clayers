@@ -1,5 +1,26 @@
 ## Reference
+### struct ```XY```
+```d
+size_t x
+size_t y
+```
+Simple two-value storage. Use like this: `XY(10, 4)`
+
 ### class ```ConsoleWindow```
+
+```d
+this(XY size = XY(80, 24))
+```
+Constructor, sets the size of the window.
+
+---
+
+```d
+void clayersLog(string s)
+```
+Logs to file `clayers.log`
+
+---
 
 ```d
 @property size_t width()
@@ -52,6 +73,14 @@ Removes a specific layer
 ---
 
 ### class ```ConsoleLayer```, inherits ```ConsoleWindow```
+
+```d
+this(XY location, XY size, bool transparent = false)
+```
+Constructor for the layer. Sets the location and size. Also optional transparancy.
+
+---
+
 ```d
 @property bool transparent()
 @property bool transparent(bool isTransparent)
