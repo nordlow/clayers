@@ -158,6 +158,7 @@ class ConsoleWindow{
 	*	 cl = Should be a already defined layer.
 	*/
 	void addLayer(ConsoleLayer cl){
+		cl.setParent(this);
 		layers ~= cl;
 	}
 	
@@ -170,6 +171,7 @@ class ConsoleWindow{
 	void removeLayer(ConsoleLayer cl){
 		foreach(n; 0 .. layers.length){
 			if(cl == layers[n]){
+				cl.removeParent();
 				layers = remove(layers, n);
 				return;
 			}
@@ -180,6 +182,8 @@ class ConsoleWindow{
 }
 
 class ConsoleLayer : ConsoleWindow{
+	private ConsoleWindow parent;
+
 	protected XY location;
 	protected bool transparent_ = false, visible_ = true;
 
@@ -212,6 +216,13 @@ class ConsoleLayer : ConsoleWindow{
 		bool visible(bool isVisible){
 			return visible_ = isVisible;
 		}
+	}
+
+	protected void setParent(ConsoleWindow cw){
+		parent = cw;
+	}
+	protected void removeParent(){
+		parent = null;
 	}
 	
 	/*
@@ -255,7 +266,7 @@ class ConsoleLayer : ConsoleWindow{
 	}
 
 	/*
-	* Functions like std.stdio.write(), only it writes in the layer. Does wrap around badly, no overflow.
+	* Functions like std.stdio.write(), only it writes in the layer. Does not wrap. 
 	*
 	* Params:
 	*	 xy = X and Y positions of where to write.
@@ -264,8 +275,8 @@ class ConsoleLayer : ConsoleWindow{
 	void write(XY xy, string s){
 		foreach(a; 0 .. s.length){
 			try{
-				int split = cast(int)((xy.x + a) / size.x);
-				slots[(xy.x + a) % size.x][xy.y + split] = s[a];
+				//int split = cast(int)((xy.x + a) / size.x);
+				slots[xy.x + a][xy.y] = s[a];
 			}catch{
 				clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
 			}
@@ -278,8 +289,8 @@ class ConsoleLayer : ConsoleWindow{
 	* Params:
 	*	 cl = Layer to be moved to the front.
 	*/
-	void moveLayerFront(){
-		moveLayerForward(layers.length);
+	void moveToFront(){
+		moveForward(parent.layers.length);
 	}
 
 	/**
@@ -288,8 +299,8 @@ class ConsoleLayer : ConsoleWindow{
 	* Params:
 	*	 cl = Layer to be moved to the back.
 	*/
-	void moveLayerBack(){
-		moveLayerBackward(layers.length);
+	void moveToBack(){
+		moveBackward(parent.layers.length);
 	}
 
 	/*
@@ -299,13 +310,13 @@ class ConsoleLayer : ConsoleWindow{
 	*	 cl = Layer to be moved. 
 	*	 amount = The amount of times the layer should be moved.
 	*/
-	void moveLayerForward(size_t amount = 1){
+	void moveForward(size_t amount = 1){
 		foreach(c; 0 .. amount)
-		foreach(a; 0 .. layers.length){
-			if(layers[a] == this && a < layers.length - 1){
-				auto t = layers[a + 1];
-				layers[a + 1] = layers[a];
-				layers[a] = t;
+		foreach(a; 0 .. parent.layers.length){
+			if(parent.layers[a] == this && a < parent.layers.length - 1){
+				auto t = parent.layers[a + 1];
+				parent.layers[a + 1] = parent.layers[a];
+				parent.layers[a] = t;
 			}
 		}
 	}
@@ -317,13 +328,13 @@ class ConsoleLayer : ConsoleWindow{
 	*	 cl = Layer to be moved. 
 	*	 amount = The amount of times the layer should be moved.
 	*/
-	void moveLayerBackward(size_t amount = 1){
+	void moveBackward(size_t amount = 1){
 		foreach(c; 0 .. amount)
-		foreach(a; 0 .. layers.length){
-			if(layers[a] == this && a > 0){
-				auto t = layers[a - 1];
-				layers[a - 1] = layers[a];
-				layers[a] = t;
+		foreach(a; 0 .. parent.layers.length){
+			if(parent.layers[a] == this && a > 0){
+				auto t = parent.layers[a - 1];
+				parent.layers[a - 1] = parent.layers[a];
+				parent.layers[a] = t;
 			}
 		}
 	}
