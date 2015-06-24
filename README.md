@@ -43,18 +43,25 @@ void main(){
 	layerPopup2.transparent(true);
 	layerPopup2.moveBackward();
 
-	foreach(x; 0 .. window.width)
-	foreach(y; 0 .. window.height){
+	foreach(x; 0 .. layerPopup.width)
+	foreach(y; 0 .. layerPopup.height)
 		if(x == 0 || x == layerPopup.width - 1 || y == 0 || y == layerPopup.height - 1)
 			layerPopup.write(XY(x,y), '*');
+	
+	foreach(x; 0 .. layerPopup2.width)
+	foreach(y; 0 .. layerPopup2.height)
 		if(x == 0 || x == layerPopup2.width - 1 || y == 0 || y == layerPopup2.height - 1)
 			layerPopup2.write(XY(x,y), 'o');
+
+	foreach(x; 0 .. layerSidebar.width)
+	foreach(y; 0 .. layerSidebar.height)
 		if(x == 0 || x == layerSidebar.width - 1 || y == 0 || y == layerSidebar.height - 1)
 			layerSidebar.write(XY(x,y), '+');
-		if(x % 2 == 0){
+
+	foreach(x; 0 .. layerMain.width)
+	foreach(y; 0 .. layerMain.height)
+		if(x % 2 == 0 && x < layerMain.width)
 			layerMain.write(XY(x,y), '.');
-		}
-	}
 
 	layerPopup.write(XY(2, 2), "This is a popup! There could be some information in here.");
 	layerPopup.write(XY(2, 4), "For instance, this layer is opaque.");
