@@ -1,6 +1,6 @@
 {
 	"name": "clayers",
-	"description": "Multiple console layer handling.",
+	"description": "Console rendering, with layers",
 	"copyright": "Copyright © 2015, vladde",
 	"authors": ["vladdeSV"],
 	"license": "MIT",
