@@ -1,10 +1,7 @@
 {
 	"name": "clayers",
-	"description": "Console rendering, with layers",
+	"description": "Console rendering with layers for games",
+	"license": "MIT",
 	"copyright": "Copyright © 2015, vladde",
 	"authors": ["vladdeSV"],
-	"license": "MIT",
-	"dependencies": {
-
-	}
 }
