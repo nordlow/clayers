@@ -77,6 +77,5 @@ void main(){
 ```
 
 ## Extra
-* [Usage](../master/doc/USAGE.md) - Quick guide of how to use clayers.
 * [Reference](../master/doc/REFERENCE.md) - Reference list of all the functions.
 
