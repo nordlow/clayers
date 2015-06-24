@@ -20,29 +20,49 @@ clayers (**c**onsole **layers**) is a cross-platform console render library for 
 * Only writing out what has changed
 
 ## Demonstration
+This code was used to create screenshot above.
 ```d
 import clayers;
 
 void main(){
 
+	int split = 50;
+
 	auto window = new ConsoleWindow(XY(80, 24));
 
-	auto layer = new ConsoleLayer(XY(0, 0), XY(15, 15));
-	window.addLayer(layer);
+	auto layerMain    = new ConsoleLayer(XY(0,  0), XY(split, window.height));
+	auto layerSidebar = new ConsoleLayer(XY(split, 0), XY(window.width - split, window.height)); //A sidebar
+	auto layerPopup   = new ConsoleLayer(XY(2, 15), XY(window.width - 5, 7 )); //Opaque box
+	auto layerPopup2  = new ConsoleLayer(XY(split - 8, 4), XY(30, 15)); //Transparent box
 
-	layer.layerWrite(XY(0, 0), "Hello World!");
-	layer.layerWrite(XY(7, 7), '*');
+	window.addLayer(layerMain);
+	window.addLayer(layerSidebar);
+	window.addLayer(layerPopup);
+	window.addLayer(layerPopup2);
 
-	auto layer2 = new ConsoleLayer(XY(60, 0), XY(20, 24)); //A sidebar
-	auto layer3 = new ConsoleLayer(XY(50, 9), XY(15, 5)); //Small box
+	layerPopup2.transparent(true);
+	layerPopup2.moveBackward();
 
-	window.addLayer(layer2);
-	window.addLayer(layer3);
+	foreach(x; 0 .. window.width)
+	foreach(y; 0 .. window.height){
+		if(x == 0 || x == layerPopup.width - 1 || y == 0 || y == layerPopup.height - 1)
+			layerPopup.write(XY(x,y), '*');
+		if(x == 0 || x == layerPopup2.width - 1 || y == 0 || y == layerPopup2.height - 1)
+			layerPopup2.write(XY(x,y), 'o');
+		if(x == 0 || x == layerSidebar.width - 1 || y == 0 || y == layerSidebar.height - 1)
+			layerSidebar.write(XY(x,y), '+');
+		if(x % 2 == 0){
+			layerMain.write(XY(x,y), '.');
+		}
+	}
 
-	//some code for visualisation
-	foreach(y; 0 .. 15) layer. layerWrite(XY(0, y), "...............");
-	foreach(y; 0 .. 24) layer2.layerWrite(XY(0, y), "*********************");
-	foreach(y; 0 .. 5)  layer3.layerWrite(XY(0, y), "---------------");
+	layerPopup.write(XY(2, 2), "This is a popup! There could be some information in here.");
+	layerPopup.write(XY(2, 4), "For instance, this layer is opaque.");
+
+	layerPopup2.write(XY(2, 2), "This box is translucent.");
+	layerPopup2.write(XY(2, 8), "This layer is also behind");
+	layerPopup2.write(XY(2, 9), "that one |");
+	layerPopup2.write(XY(11, 10), 'V');
 
 	window.print();
 }
