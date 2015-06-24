@@ -246,7 +246,7 @@ class ConsoleLayer : ConsoleWindow{
 		try{
 			slots[xy.x][xy.y] = c;
 		}catch{
-			clayersLog("Warning: Failed to write " ~ text(c));
+			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
 	}
 
@@ -261,7 +261,7 @@ class ConsoleLayer : ConsoleWindow{
 		try{
 			slots[xy.x][xy.y] = c;
 		}catch{
-			clayersLog("Warning: Failed to write " ~ text(c));
+			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
 	}
 
