@@ -3,6 +3,12 @@ import std.stdio;
 import std.algorithm;
 import std.conv;
 
+import colorize;
+
+alias fg = colorize.fg;
+alias bg = colorize.bg;
+alias mode = colorize.mode;
+
 /*
 	TODO
 	* Better logging
@@ -11,17 +17,26 @@ import std.conv;
 
 struct XY{size_t x,y;}
 
+struct Slot{
+	dchar character;
+
+	fg color = fg.init;
+	bg background = bg.init;
+	mode mode_ = mode.init;
+}
+
 class ConsoleWindow{
 
 	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
 	protected ConsoleLayer[] layers;
 	protected XY size;
-	protected dchar[][] slots;
-	protected dchar[][] changeBuffert;
+	protected Slot[][] slots;
+	protected Slot[][] changeBuffert;
 
 	private File log;
 
 	this(XY size = XY(80, 24)){
+
 
 		log = File("clayers.log", "w+");
 
@@ -33,21 +48,21 @@ class ConsoleWindow{
 		this.size = size;
 
 		//Sets the width and height.
-		slots = new dchar[][](size.x, size.y);	
+		slots = new Slot[][](size.x, size.y);	
 		//Set every tile to be the background.
-		foreach(x; 0 .. size.x) slots[x][0 .. $] = ' ';
+		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
 
 		//Print out all the tiles to remove junk characters
 		scp(XY(0, 0));
 
-		foreach(y; 0 .. size.y)
-		foreach(x; 0 .. size.x){
-			scp(XY(x,y));
-			write(slots[x][y]);
-		}
-
 		//Save to the change buffert
 		changeBuffert = slots;
+
+		foreach(x; 0 .. size.x)
+		foreach(y; 0 .. size.y){
+			scp(XY(x, y));
+			write(' ');
+		}
 	}
 
 	void clayersLog(string s){
@@ -105,9 +120,9 @@ class ConsoleWindow{
 	}
 	
 	/**
-	 * Returns the dchar at the specific X and Y coordinates in the window.
+	 * Returns the slot at the specific X and Y coordinates in the window.
 	*/
-	dchar getSlot(XY location){
+	Slot getSlot(XY location){
 		return snap()[location.x][location.y];
 	}
 
@@ -115,7 +130,7 @@ class ConsoleWindow{
 	* Prints all the layers in the correct order.
 	*/
 	void print(){
-		dchar[][] writes = snap();
+		Slot[][] writes = snap();
 
 		if(writes == changeBuffert)
 			return;
@@ -124,7 +139,14 @@ class ConsoleWindow{
 		foreach(x; 0 .. size.x){
 			if(writes[x][y] != changeBuffert[x][y]){
 				scp(XY(x,y));
-				write(writes[x][y]);
+				write(
+					color(
+						to!string(writes[x][y].character),
+						writes[x][y].color,
+						writes[x][y].background,
+						writes[x][y].mode_
+					)
+				);
 			}
 		}
 
@@ -135,16 +157,16 @@ class ConsoleWindow{
 	/*
 	* Returns a 'snap', snapshot, of all the layers merged.
 	*/
-	dchar[][] snap(){
+	Slot[][] snap(){
 		//Thanks ketmar from #d
-		dchar[][] snap = new dchar[][](slots.length, slots[0].length);
+		Slot[][] snap = new Slot[][](slots.length, slots[0].length);
 		foreach (x, col; snap) col[] = slots[x][];
 
 		foreach(a; 0 .. layers.length)
 			if(layers[a].visible){
 				foreach(x; 0 .. layers[a].size.x)
 				foreach(y; 0 .. layers[a].size.y)
-					if(!(layers[a].transparent && layers[a].getSlot(XY(x,y)) == ' '))
+					if(!(layers[a].transparent && layers[a].getSlot(XY(x,y)) == Slot(' ')))
 						snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
 		}
 		return snap;
@@ -226,12 +248,12 @@ class ConsoleLayer : ConsoleWindow{
 	}
 	
 	/*
-	* Returns the dchar at specified slot.
+	* Returns the slot at specified slot.
 	*
 	* Params:
 	*	 location = X and Y coordinates of the slot to return.
 	*/	
-	override dchar getSlot(XY location){
+	override Slot getSlot(XY location){
 		return slots[location.x][location.y];
 	}
 	
@@ -242,24 +264,9 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 c = The character to write.
 	*/
-	void write(XY xy, dchar c){
+	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init){
 		try{
-			slots[xy.x][xy.y] = c;
-		}catch{
-			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
-		}
-	}
-
-	/*
-	* Functions like std.stdio.write(), only it writes in the layer.
-	*
-	* Params:
-	*	 xy = X and Y positions of where to write.
-	*	 c = The character to write.
-	*/
-	void write(XY xy, char c){
-		try{
-			slots[xy.x][xy.y] = c;
+			slots[xy.x][xy.y] = Slot(c, color, background, mode_);
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -272,11 +279,11 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 s = The string to be written.
 	*/
-	void write(XY xy, string s){
+	void write(XY xy, string s, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init){
 		foreach(a; 0 .. s.length){
 			try{
 				//int split = cast(int)((xy.x + a) / size.x);
-				slots[xy.x + a][xy.y] = s[a];
+				slots[xy.x + a][xy.y] = Slot(s[a], color, background, mode_);
 			}catch{
 				clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
 			}

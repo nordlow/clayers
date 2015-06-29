@@ -4,4 +4,7 @@
 	"authors": ["Vladde Nordholm"],
 	"copyright": "Copyright (c) 2015 Vladde Nordholm",
 	"license": "MIT",
+	"dependencies": {
+		"colorize": "~>1.0.5"
+	}
 }
