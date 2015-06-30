@@ -85,3 +85,5 @@ void main(){
 ## Extra
 * [Reference](../master/doc/REFERENCE.md) - Reference list of all the functions.
 
+**NOTE:** This readme might not always be up to date with the source code+reference.
+
