@@ -1,10 +1,28 @@
 ## Reference
+
+### aliases
+```d
+fg = colorize.fg
+bg = colorize.bg
+mode = colorize.mode
+```
+See <https://github.com/yamadapc/d-colorize#available-colors-and-modes> for more info about colors.
+
+### struct ```Slot```
+```d
+dchar character
+fg color = fg.init
+bg background = bg.init
+mode mode = mode.init
+```
+Container for a character, text color, background and mode.
+
 ### struct ```XY```
 ```d
 size_t x
 size_t y
 ```
-Simple two-value storage. Use like this: `XY(10, 4)`
+Simple two-value storage. Use like this: `XY(10, 4)`.
 
 ### class ```ConsoleWindow```
 
@@ -37,9 +55,9 @@ Returns the width of the window/layer.
 ---
 
 ```d
-dchar getSlot(XY location)
+Slot getSlot(XY location)
 ```
-Returns the dchar at the specific X and Y coordinates in the window. 
+Returns the slot at the specific X and Y coordinates in the window. 
 
 ---
 
@@ -51,7 +69,7 @@ Prints all the layers in the correct order.
 ---
 
 ```d
-dchar[][] snap()
+Slot[][] snap()
 ```
 Returns a 'snap', snapshot, of all the layers merged.
 
@@ -99,18 +117,18 @@ Is the layer visible or not?
 ---
 
 ```d
-override dchar getSlot(XY location)
+override Slot getSlot(XY location)
 ```
-Returns the dchar at specified slot.
+Returns the slot at specified location.
 
 ---
 
 ```d
-void write(XY xy, dchar c)
-void write(XY xy, char c)
-void write(XY xy, string s)
+void write(XY xy, dchar c,  fg color = fg.init, bg background = bg.init, mode mode_ = mode.init)
+void write(XY xy, string s, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init)
 ```
-Functions like ```std.stdio.write();```, only it writes in the layer. Does wrap around badly, no overflow.
+Writes to the current layer at (xy.x, xy.y). Uses `colorize` for color support.
+* **Note:** The modes `bold` and `blink` are known to cause unexpected behaviour.
 
 ---
 
