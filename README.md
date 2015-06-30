@@ -19,6 +19,7 @@ clayers (**c**onsole **layers**) is a cross-platform console render library for 
 
 ##### Rendering
 
+* Color support!
 * Printing out all layers merged
 * Only writing out what has changed
 
