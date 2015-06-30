@@ -133,6 +133,15 @@ Writes to the current layer at (xy.x, xy.y). Uses `colorize` for color support.
 ---
 
 ```d
+void setSlotColor      (XY xy, fg color)
+void setSlotBackground (XY xy, bg background)
+void setSlotMode       (XY xy, mode mode_)
+```
+Sets the text-color, background-color and mode respectively at specified location.
+
+---
+
+```d
 void remove()
 ```
 Deletes the layer.

@@ -291,6 +291,37 @@ class ConsoleLayer : ConsoleWindow{
 	}
 
 	/**
+	* Set the text-color at specified location
+	*/
+	void setSlotColor(XY xy, fg color){
+		try{
+			slots[xy.x][xy.y].color = color;
+		}catch{
+			clayersLog("Warning: Failed to set color " ~ text(color) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+		}
+	}
+	/**
+	* Set the background color at specified location
+	*/
+	void setSlotBackground(XY xy, bg background){
+		try{
+			slots[xy.x][xy.y].background = background;
+		}catch{
+			clayersLog("Warning: Failed to set background " ~ text(background) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+		}
+	}
+	/**
+	* Set the mode at specified location
+	*/
+	void setSlotMode(XY xy, mode mode_){
+		try{
+			slots[xy.x][xy.y].mode_ = mode_;
+		}catch{
+			clayersLog("Warning: Failed to set mode " ~ text(mode_) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+		}
+	}
+
+	/**
 	* Remove the layer.
 	*/
 	void remove(){
