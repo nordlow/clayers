@@ -165,9 +165,12 @@ class ConsoleWindow{
 		foreach(a; 0 .. layers.length)
 			if(layers[a].visible){
 				foreach(x; 0 .. layers[a].size.x)
-				foreach(y; 0 .. layers[a].size.y)
-					if(!(layers[a].transparent && layers[a].getSlot(XY(x,y)) == Slot(' ')))
-						snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+				foreach(y; 0 .. layers[a].size.y){
+					if(	layers[a].transparent && layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode_ != mode.swap)
+						continue;
+
+					snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+				}
 		}
 		return snap;
 	}
@@ -264,6 +267,13 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 c = The character to write.
 	*/
+	void write(XY xy, dchar c){
+		try{
+			slots[xy.x][xy.y].character = c;
+		}catch{
+			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+		}
+	}
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init){
 		try{
 			slots[xy.x][xy.y] = Slot(c, color, background, mode_);
@@ -279,6 +289,16 @@ class ConsoleLayer : ConsoleWindow{
 	*	 xy = X and Y positions of where to write.
 	*	 s = The string to be written.
 	*/
+	void write(XY xy, string s){
+		foreach(a; 0 .. s.length){
+			try{
+				//int split = cast(int)((xy.x + a) / size.x);
+				slots[xy.x + a][xy.y].character = s[a];
+			}catch{
+				clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
+			}
+		}
+	}
 	void write(XY xy, string s, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init){
 		foreach(a; 0 .. s.length){
 			try{
