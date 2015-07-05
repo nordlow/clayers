@@ -4,7 +4,7 @@
 ```d
 fg = colorize.fg
 bg = colorize.bg
-mode = colorize.mode
+md = colorize.mode
 ```
 See <https://github.com/yamadapc/d-colorize#available-colors-and-modes> for more info about colors.
 
@@ -13,7 +13,7 @@ See <https://github.com/yamadapc/d-colorize#available-colors-and-modes> for more
 dchar character
 fg color = fg.init
 bg background = bg.init
-mode mode = mode.init
+md mode = md.init
 ```
 Container for a character, text color, background and mode.
 
@@ -124,8 +124,8 @@ Returns the slot at specified location.
 ---
 
 ```d
-void write(XY xy, dchar c,  fg color = fg.init, bg background = bg.init, mode mode_ = mode.init)
-void write(XY xy, string s, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init)
+void write(XY xy, dchar c,  fg color = fg.init, bg background = bg.init, md mode = md.init)
+void write(XY xy, string s, fg color = fg.init, bg background = bg.init, md mode = md.init)
 ```
 Writes to the current layer at (xy.x, xy.y). Uses `colorize` for color support.
 * **Note:** The modes `bold` and `blink` are known to cause unexpected behaviour.
@@ -135,7 +135,7 @@ Writes to the current layer at (xy.x, xy.y). Uses `colorize` for color support.
 ```d
 void setSlotColor      (XY xy, fg color)
 void setSlotBackground (XY xy, bg background)
-void setSlotMode       (XY xy, mode mode_)
+void setSlotMode       (XY xy, md mode)
 ```
 Sets the text-color, background-color and mode respectively at specified location.
 

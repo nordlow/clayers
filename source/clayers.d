@@ -7,7 +7,7 @@ import colorize;
 
 alias fg = colorize.fg;
 alias bg = colorize.bg;
-alias mode = colorize.mode;
+alias md = colorize.mode;
 
 /*
 	TODO
@@ -22,7 +22,7 @@ struct Slot{
 
 	fg color = fg.init;
 	bg background = bg.init;
-	mode mode_ = mode.init;
+	md mode = md.init;
 }
 
 class ConsoleWindow{
@@ -144,7 +144,7 @@ class ConsoleWindow{
 						to!string(writes[x][y].character),
 						writes[x][y].color,
 						writes[x][y].background,
-						writes[x][y].mode_
+						writes[x][y].mode
 					)
 				);
 			}
@@ -166,7 +166,7 @@ class ConsoleWindow{
 			if(layers[a].visible){
 				foreach(x; 0 .. layers[a].size.x)
 				foreach(y; 0 .. layers[a].size.y){
-					if(	layers[a].transparent && layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode_ != mode.swap)
+					if(	layers[a].transparent && layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap)
 						continue;
 
 					snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
@@ -274,9 +274,9 @@ class ConsoleLayer : ConsoleWindow{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
 	}
-	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init){
+	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
-			slots[xy.x][xy.y] = Slot(c, color, background, mode_);
+			slots[xy.x][xy.y] = Slot(c, color, background, mode);
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -299,11 +299,11 @@ class ConsoleLayer : ConsoleWindow{
 			}
 		}
 	}
-	void write(XY xy, string s, fg color = fg.init, bg background = bg.init, mode mode_ = mode.init){
+	void write(XY xy, string s, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		foreach(a; 0 .. s.length){
 			try{
 				//int split = cast(int)((xy.x + a) / size.x);
-				slots[xy.x + a][xy.y] = Slot(s[a], color, background, mode_);
+				slots[xy.x + a][xy.y] = Slot(s[a], color, background, mode);
 			}catch{
 				clayersLog("Warning: Failed to write " ~ s ~ ", specifically " ~ text(s[a]) ~ ", letter #" ~ text(a + 1));
 			}
@@ -333,11 +333,11 @@ class ConsoleLayer : ConsoleWindow{
 	/**
 	* Set the mode at specified location
 	*/
-	void setSlotMode(XY xy, mode mode_){
+	void setSlotMode(XY xy, md mode){
 		try{
-			slots[xy.x][xy.y].mode_ = mode_;
+			slots[xy.x][xy.y].mode = mode;
 		}catch{
-			clayersLog("Warning: Failed to set mode " ~ text(mode_) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+			clayersLog("Warning: Failed to set mode " ~ text(mode) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
 	}
 
