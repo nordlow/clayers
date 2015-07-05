@@ -139,7 +139,7 @@ class ConsoleWindow{
 		foreach(x; 0 .. size.x){
 			if(writes[x][y] != changeBuffert[x][y]){
 				scp(XY(x,y));
-				write(
+				cwrite(
 					color(
 						to!string(writes[x][y].character),
 						writes[x][y].color,
