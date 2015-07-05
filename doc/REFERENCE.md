@@ -13,7 +13,7 @@ See <https://github.com/yamadapc/d-colorize#available-colors-and-modes> for more
 dchar character
 fg color = fg.init
 bg background = bg.init
-mode mode = mode.init
+mode mode_ = mode.init
 ```
 Container for a character, text color, background and mode.
 

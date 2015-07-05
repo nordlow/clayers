@@ -1,8 +1,8 @@
 # clayers
 
-![Thanks @frdmn!](http://i.imgur.com/aHCO761.gif)
+![Thanks @frdmn!](http://i.imgur.com/VsJkvFU.gif)
 
-clayers (**c**onsole **layers**) is a cross-platform console render library for game devs, supporting multiple layers, efficient rendering and easy management. Layers can be added, removed and rearranged as well as toggled between translucent and opaque. Rendering only writes out what has changed, minimizing rendering to as little and quick as possible.
+clayers (**c**onsole **layers**) is a cross-platform console render library for game devs, supporting multiple layers, colors, efficient rendering and easy management. Layers can be added, removed and rearranged as well as toggled between translucent and opaque. Rendering only writes out what has changed, minimizing rendering to as little and quick as possible.
 
 ### Features
 
@@ -19,6 +19,7 @@ clayers (**c**onsole **layers**) is a cross-platform console render library for 
 
 ##### Rendering
 
+* Color support!
 * Printing out all layers merged
 * Only writing out what has changed
 
@@ -84,4 +85,6 @@ void main(){
 
 ## Extra
 * [Reference](../master/doc/REFERENCE.md) - Reference list of all the functions.
+
+**NOTE:** This readme might not always be up to date with the source code+reference.
 
