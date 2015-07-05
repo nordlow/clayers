@@ -26,7 +26,8 @@ version(Windows){
 }
 
 void main(){
-    hOutput = GetStdHandle(handle);
+	version(Windows)
+		hOutput = GetStdHandle(handle);
 
     string os = "unknown";
     int amount = 200;
@@ -51,16 +52,18 @@ void main(){
             write('1');
         }
         stdout.flush();
+
         s1.stop();
 
         s2.start();
         string print;
         foreach(x; 0 .. a){
             print ~= '2';
-            scp(XY(0, 1));
-            write(print);
         }
+		scp(XY(0, 1));
+		write(print);
         stdout.flush();
+
         s2.stop();
 
         file.write("(", os, ") ", a, " slots:\n\t\t\tSCP heavy: ", s1.peek(), "\n\t\t\tliner:     ", s2.peek(), "\n");
