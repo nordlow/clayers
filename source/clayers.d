@@ -23,6 +23,11 @@ struct Slot{
 	fg color = fg.init;
 	bg background = bg.init;
 	md mode = md.init;
+
+	string getCharacter(){
+		return colorize.color(to!string(character), color, background, mode);
+	}
+
 }
 
 class ConsoleWindow{
@@ -36,7 +41,7 @@ class ConsoleWindow{
 	private File log;
 
 	this(XY size = XY(80, 24)){
-
+		setCursorVisible(false);
 
 		log = File("clayers.log", "w+");
 
@@ -100,6 +105,11 @@ class ConsoleWindow{
 				stdout.flush();
 				writef("\033[%d;%df", pos.y + 1, pos.x + 1);
 			}
+			void setCursorVisible(bool visible){
+				char c;
+				visible ? c = 'h' : c = 'l';
+				writef("\033[?25%c", c);
+			}
 		}
 	}
 
@@ -134,22 +144,19 @@ class ConsoleWindow{
 
 		if(writes == changeBuffert)
 			return;
-
-		foreach(y; 0 .. size.y)
-		foreach(x; 0 .. size.x){
-			if(writes[x][y] != changeBuffert[x][y]){
-				scp(XY(x,y));
-				cwrite(
-					color(
-						to!string(writes[x][y].character),
-						writes[x][y].color,
-						writes[x][y].background,
-						writes[x][y].mode
-					)
-				);
+		
+		string print;
+		foreach(y; 0 .. height){
+			foreach(x; 0 .. width){
+				print ~= writes[x][y].getCharacter();
 			}
+			scp(XY(0, y));
+			write(print);
+			print = null;
 		}
 
+        stdout.flush();
+		
 		changeBuffert = writes;
 		scp(XY(0, 0));
 	}
