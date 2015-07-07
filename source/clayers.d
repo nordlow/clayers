@@ -41,17 +41,14 @@ class ConsoleWindow{
 	private File log;
 
 	this(XY size = XY(80, 24)){
+		//To get access to the windows console
+		version(Windows)
+			hOutput = GetStdHandle(handle);
 		setCursorVisible(false);
 
 		log = File("clayers.log", "w+");
 
-		//To get access to the windows console
-		version(Windows){
-			hOutput = GetStdHandle(handle);
-		}
-
 		this.size = size;
-
 		//Sets the width and height.
 		slots = new Slot[][](size.x, size.y);	
 		//Set every tile to be the background.
@@ -59,22 +56,21 @@ class ConsoleWindow{
 
 		//Print out all the tiles to remove junk characters
 		scp(XY(0, 0));
-
-		//Save to the change buffert
-		changeBuffert = slots;
-
 		foreach(x; 0 .. size.x)
 		foreach(y; 0 .. size.y){
 			scp(XY(x, y));
 			write(' ');
 		}
+
+		//Save to the change buffert
+		changeBuffert = slots;
 	}
 
 	void clayersLog(string s){
 		log.writeln(s);	
 	}
 
-	//Functions to operate correctly with console/terminal
+	//Functions to operate correctly with console/terminal. All code in here was borrowed and modified from 'robik/ConsoleD'.
 	private{
 		version(Windows){
 			import core.sys.windows.windows;
@@ -88,6 +84,13 @@ class ConsoleWindow{
 				return XY(info.srWindow.Right  - info.srWindow.Left + 1, info.srWindow.Bottom - info.srWindow.Top  + 1);
 			}
 
+			void setCursorVisible(bool visible){
+			{
+				CONSOLE_CURSOR_INFO cci;
+				GetConsoleCursorInfo(hOutput, &cci);
+				cci.bVisible = visible;
+				SetConsoleCursorInfo(hOutput, &cci);
+			}
 			/**
 			* Set cursor position
 			*/
@@ -105,6 +108,7 @@ class ConsoleWindow{
 				stdout.flush();
 				writef("\033[%d;%df", pos.y + 1, pos.x + 1);
 			}
+
 			void setCursorVisible(bool visible){
 				char c;
 				visible ? c = 'h' : c = 'l';
@@ -169,15 +173,16 @@ class ConsoleWindow{
 		Slot[][] snap = new Slot[][](slots.length, slots[0].length);
 		foreach (x, col; snap) col[] = slots[x][];
 
-		foreach(a; 0 .. layers.length)
+		foreach(a; 0 .. layers.length){
 			if(layers[a].visible){
-				foreach(x; 0 .. layers[a].size.x)
+				foreach(x; 0 .. layers[a].size.x){
 				foreach(y; 0 .. layers[a].size.y){
-					if(	layers[a].transparent && layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap)
+					if(layers[a].transparent || layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap)
 						continue;
-
 					snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
 				}
+				}
+			}
 		}
 		return snap;
 	}
