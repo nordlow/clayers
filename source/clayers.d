@@ -36,7 +36,6 @@ class ConsoleWindow{
 	protected ConsoleLayer[] layers;
 	protected XY size;
 	protected Slot[][] slots;
-	protected Slot[][] changeBuffert;
 
 	private File log;
 
@@ -61,9 +60,6 @@ class ConsoleWindow{
 			scp(XY(x, y));
 			write(' ');
 		}
-
-		//Save to the change buffert
-		changeBuffert = slots;
 	}
 
 	void clayersLog(string s){
@@ -85,7 +81,6 @@ class ConsoleWindow{
 			}
 
 			void setCursorVisible(bool visible){
-			{
 				CONSOLE_CURSOR_INFO cci;
 				GetConsoleCursorInfo(hOutput, &cci);
 				cci.bVisible = visible;
@@ -146,9 +141,6 @@ class ConsoleWindow{
 	void print(){
 		Slot[][] writes = snap();
 
-		if(writes == changeBuffert)
-			return;
-		
 		string print;
 		foreach(y; 0 .. height){
 			foreach(x; 0 .. width){
@@ -158,10 +150,8 @@ class ConsoleWindow{
 			write(print);
 			print = null;
 		}
-
         stdout.flush();
 		
-		changeBuffert = writes;
 		scp(XY(0, 0));
 	}
 	
@@ -177,7 +167,7 @@ class ConsoleWindow{
 			if(layers[a].visible){
 				foreach(x; 0 .. layers[a].size.x){
 				foreach(y; 0 .. layers[a].size.y){
-					if(layers[a].transparent || layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap)
+					if(!layers[a].visible || layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap && layers[a].transparent)
 						continue;
 					snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
 				}
