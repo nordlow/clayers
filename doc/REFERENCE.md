@@ -15,7 +15,16 @@ fg color = fg.init
 bg background = bg.init
 md mode = md.init
 ```
-Container for a character, text color, background and mode.
+Storage for a *character*, text *color*, *background* and *mode*.
+
+* **NOTE:** Not all *mode*s are supported on all platforms.
+
+---
+
+```d
+string getCharacter()
+```
+Returns a fully colorized letter.
 
 ### struct ```XY```
 ```d
@@ -41,16 +50,18 @@ Logs to file `clayers.log`
 ---
 
 ```d
-@property size_t width()
+void setSafePrint(bool sp)
 ```
-Returns the width of the window/layer.
+Does not print out the bottom right slot. Recommended, necessary for POSIX and causes studdering on Windows.
+*Why this function exists is because once the full screen is printed, it moves the cursor down one line. which means that the screen gets pushed up one line, while the program still not. This causes weird rendering and a huge scrollback.*
 
 ---
 
 ```d
+@property size_t width()
 @property size_t height()
 ```
-Returns the width of the window/layer.
+Returns the width/height of the window/layer.
 
 ---
 
@@ -104,7 +115,7 @@ Constructor for the layer. Sets the location and size. Also optional transparanc
 @property bool transparent(bool isTransparent)
 ```
 Is the layer transparent or not?
-* **NOTE:** There is no such thing as transparency. Transparency only means that blanks, `' '`, are seethrough.
+* **NOTE:** There is no such thing as transparency. Transparency only means that blanks, `' '` with default background, are seethrough.
 
 ---
 

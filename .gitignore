@@ -9,4 +9,5 @@ dub.userprefs
 dub.selections.json
 clayers
 libclayers*
-
+clayers.log
+source/main.d

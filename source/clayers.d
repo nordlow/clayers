@@ -11,9 +11,7 @@ alias bg = colorize.bg;
 alias md = colorize.mode;
 
 /*
-	TODO
-	* Better logging
-	* Fix all uncertainties, aka other TODO's
+	TODO: See https://trello.com/b/p39UD2rJ/clayers
 */
 
 struct XY{size_t x,y;}
@@ -45,6 +43,7 @@ class ConsoleWindow{
 		//To get access to the windows console
 		version(Windows)
 			hOutput = GetStdHandle(handle);
+
 		scv(false);
 
 		log = File("clayers.log", "w+");
@@ -158,7 +157,7 @@ class ConsoleWindow{
 		string print;
 		foreach(y; 0 .. height){
 			foreach(x; 0 .. width){
-				if(!(y == height-1 && x == width - 1))
+				if(!(y == height-1 && x == width - 1 && safePrint))
 					print ~= writes[x][y].getCharacter();
 			}
 			scp(XY(0, y));
@@ -168,7 +167,7 @@ class ConsoleWindow{
 		}
         stdout.flush();
 		
-		scp(XY(0, 0));
+		//scp(XY(0, 0));
 	}
 	
 	/*
