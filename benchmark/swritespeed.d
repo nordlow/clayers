@@ -4,15 +4,9 @@ import std.file;
 import std.math;
 
 /*
-This is a write speed benchmarker.
+This is a write special version of the speed benchmarker.
 
-It's purpose is to test which is faster:
-- Move the cursor to appropriate location and print out the character, for all characters. (SCP heavy)
-- Append characters to a string and then print the whole line. (liner)
-
-Conclusion:
-It is faster to move the cursor and print out induvidual characters (SCP heavy) for both POSIX (Debian 64-bit, Terminator) and Windows (Windows 7 64-bit, CMD.exe).
-See output_writespeed_Windows & output_writespeed_Posix
+All this does is printing out the values for 'SCP heavy' and 'liner' in separate files.
 */
 
 struct XY{ size_t x,y; }
@@ -32,9 +26,10 @@ void main(){
 	}
 
 	StopWatch s1, s2;
-	File file = File("output_"~os~"_writespeed.txt", "w");
-
-	file.write("Testing on ", os, "\n");
+	File file1 = File("output_"~os~"_swritespeed_SCP.txt", "w");
+	file1.writeln("SCP heavy");
+	File file2 = File("output_"~os~"_swritespeed_liner.txt", "w");
+	file2.writeln("liner");
 
 	foreach(a; 0 .. amount){
 		
@@ -58,7 +53,8 @@ void main(){
 
 		s2.stop();
 
-		file.write("(", os, ") ", a, " slots:\n\t\t\tSCP heavy: ", s1.peek(), "\n\t\t\tliner:     ", s2.peek(), "\n");
+		file1.writeln(s1.peek());
+		file2.writeln(s2.peek());
 
 		s1.reset();
 		s2.reset();
