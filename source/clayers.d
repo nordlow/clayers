@@ -2,6 +2,7 @@
 import std.stdio;
 import std.algorithm;
 import std.conv;
+import std.range;
 
 import colorize;
 
@@ -38,12 +39,13 @@ class ConsoleWindow{
 	protected Slot[][] slots;
 
 	private File log;
+	private bool safePrint = true;
 
 	this(XY size = XY(80, 24)){
 		//To get access to the windows console
 		version(Windows)
 			hOutput = GetStdHandle(handle);
-		setCursorVisible(false);
+		scv(false);
 
 		log = File("clayers.log", "w+");
 
@@ -62,8 +64,19 @@ class ConsoleWindow{
 		}
 	}
 
+	/**
+	* Logging method.
+	*/
 	void clayersLog(string s){
-		log.writeln(s);	
+		log.writeln(s);
+	}
+
+	/**
+	* If true, the last slot, bottom right slot, will not be printed.
+	* This is because some terminals on POSIX move the cursor down one line when finished printing, if the terminal width is the same as the ConsoleWindow.
+	*/
+	void setSafePrint(bool sp){
+		safePrint = sp;
 	}
 
 	//Functions to operate correctly with console/terminal. All code in here was borrowed and modified from 'robik/ConsoleD'.
@@ -74,25 +87,24 @@ class ConsoleWindow{
 			uint handle = STD_ERROR_HANDLE;
 			CONSOLE_SCREEN_BUFFER_INFO info;
 			HANDLE hOutput;
-			
-			XY screenSize() @property{
-				GetConsoleScreenBufferInfo( hOutput, &info );
-				return XY(info.srWindow.Right  - info.srWindow.Left + 1, info.srWindow.Bottom - info.srWindow.Top  + 1);
-			}
 
-			void setCursorVisible(bool visible){
-				CONSOLE_CURSOR_INFO cci;
-				GetConsoleCursorInfo(hOutput, &cci);
-				cci.bVisible = visible;
-				SetConsoleCursorInfo(hOutput, &cci);
-			}
 			/**
 			* Set cursor position
 			*/
 			void scp(XY pos){
-				COORD c = {cast(short)min(screenSize.x, max(0,pos.x)), cast(short)max(0, pos.y)};
+				GetConsoleScreenBufferInfo( hOutput, &info );
+				COORD c = {cast(short)min(info.srWindow.Right  - info.srWindow.Left + 1, max(0,pos.x)), cast(short)max(0, pos.y)};
 				stdout.flush();
 				SetConsoleCursorPosition(hOutput, c);
+			}
+			/**
+			* Sets the visibility of the cursor
+			*/
+			void scv(bool visible){
+				CONSOLE_CURSOR_INFO cci;
+				GetConsoleCursorInfo(hOutput, &cci);
+				cci.bVisible = visible;
+				SetConsoleCursorInfo(hOutput, &cci);
 			}
 
 		}else version(Posix){
@@ -103,8 +115,10 @@ class ConsoleWindow{
 				stdout.flush();
 				writef("\033[%d;%df", pos.y + 1, pos.x + 1);
 			}
-
-			void setCursorVisible(bool visible){
+			/**
+			* Sets the visibility of the cursor
+			*/
+			void scv(bool visible){
 				char c;
 				visible ? c = 'h' : c = 'l';
 				writef("\033[?25%c", c);
@@ -144,10 +158,12 @@ class ConsoleWindow{
 		string print;
 		foreach(y; 0 .. height){
 			foreach(x; 0 .. width){
-				print ~= writes[x][y].getCharacter();
+				if(!(y == height-1 && x == width - 1))
+					print ~= writes[x][y].getCharacter();
 			}
 			scp(XY(0, y));
-			write(print);
+
+			cwrite(print);
 			print = null;
 		}
         stdout.flush();
