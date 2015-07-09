@@ -42,8 +42,14 @@ class ConsoleWindow{
 
 	this(XY size = XY(80, 24)){
 		//To get access to the windows console
-		version(Windows)
+		version(Windows){
 			hOutput = GetStdHandle(handle);
+			SetConsoleMode(hOutput, 0x0);
+		}
+
+		version(Posix){
+			write("\033[?7l");
+		}
 
 		scv(false);
 
@@ -65,7 +71,8 @@ class ConsoleWindow{
 	}
 
 	~this(){
-		cwrite("\033[?7h", fg.init, bg.init, md.init);
+		version(Posix)
+			cwrite("\033[?7h", fg.init, bg.init, md.init);
 	}
 
 	/**
@@ -82,7 +89,7 @@ class ConsoleWindow{
 			import std.algorithm;
 			uint handle = STD_ERROR_HANDLE;
 			CONSOLE_SCREEN_BUFFER_INFO info;
-			HANDLE hOutput;
+			HANDLE hOutput, hInput;
 
 			/**
 			* Set cursor position
@@ -161,7 +168,7 @@ class ConsoleWindow{
 			cwrite(print);
 			print = null;
 		}
-        stdout.flush();
+		stdout.flush();
 		
 		//scp(XY(0, 0));
 	}
