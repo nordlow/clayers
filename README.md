@@ -57,13 +57,15 @@ void main(){
 	foreach(x; 0 .. layerPopup2.width)
 		foreach(y; 0 .. layerPopup2.height){
 			if(x == 0 || x == layerPopup2.width - 1 || y == 0 || y == layerPopup2.height - 1)
-				layerPopup2.write(XY(x,y), '#', fg.yellow, bg.red, mode.bold);
+				layerPopup2.write(XY(x,y), '#', fg.yellow, bg.red, md.bold);
 		}
 
 	foreach(x; 0 .. layerSidebar.width)
-		foreach(y; 0 .. layerSidebar.height)
-		if(x == 0 || x == layerSidebar.width - 1 || y == 0 || y == layerSidebar.height - 1)
-			layerSidebar.write(XY(x,y), '+');
+		foreach(y; 0 .. layerSidebar.height){
+			if(x == 0 || x == layerSidebar.width - 1 || y == 0 || y == layerSidebar.height - 1)
+				layerSidebar.write(XY(x,y), '+');
+			layerSidebar.setSlotBackground(XY(x,y), bg.black);
+		}
 
 	foreach(x; 0 .. layerMain.width)
 		foreach(y; 0 .. layerMain.height)
@@ -78,7 +80,8 @@ void main(){
 	layerPopup2.write(XY(2, 9), "that one |", fg.yellow, bg.white);
 	layerPopup2.write(XY(11, 10), 'V', fg.yellow, bg.white);
 
-	while(gameloop)
+	//while(gameloop) //This should be your gameloop. This demo doesn't have a game to showcase.
+	foreach(a; 0 .. 100)
 		window.print();
 }
 ```
