@@ -40,7 +40,7 @@ class ConsoleWindow{
 
 	private File log;
 
-	this(XY size = XY(80, 24)){
+	this(XY size){
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 		
@@ -72,10 +72,11 @@ class ConsoleWindow{
 		}
 	}
 
-	~this(){
+	private ~this(){
 		//Set linewrap on, and set colors to default.
 		version(Posix)
-			cwrite("\033[?7h", fg.init, bg.init, md.init);
+			write("\033[?7h");
+		//Sets the cursor.
 	}
 
 	/**
