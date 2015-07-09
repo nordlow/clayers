@@ -41,26 +41,28 @@ class ConsoleWindow{
 	private File log;
 
 	this(XY size = XY(80, 24)){
-		//To get access to the windows console
+		//Create a the log file.
+		log = File("clayers.log", "w+");
+		
 		version(Windows){
+			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
+			//Sets console to no-linewrap.
 			SetConsoleMode(hOutput, 0x0);
 		}
-
 		version(Posix){
+			//Sets terminal to no-linewrap.
 			write("\033[?7l");
 		}
 
+		//Set the cursor to not be visible.
 		scv(false);
-
-		log = File("clayers.log", "w+");
 
 		this.size = size;
 		//Sets the width and height.
 		slots = new Slot[][](size.x, size.y);	
 		//Set every tile to be the background.
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
-
 		//Print out all the tiles to remove junk characters
 		scp(XY(0, 0));
 		foreach(x; 0 .. size.x)
@@ -71,6 +73,7 @@ class ConsoleWindow{
 	}
 
 	~this(){
+		//Set linewrap on, and set colors to default.
 		version(Posix)
 			cwrite("\033[?7h", fg.init, bg.init, md.init);
 	}
@@ -82,7 +85,7 @@ class ConsoleWindow{
 		log.writeln(s);
 	}
 
-	//Functions to operate correctly with console/terminal. All code in here was borrowed and modified from 'robik/ConsoleD'.
+	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
 	private{
 		version(Windows){
 			import core.sys.windows.windows;
@@ -156,21 +159,26 @@ class ConsoleWindow{
 	* Prints all the layers in the correct order.
 	*/
 	void print(){
+		//Get a snap of what to print out.
 		Slot[][] writes = snap();
 
 		string print;
 		foreach(y; 0 .. height){
 			foreach(x; 0 .. width){
+				//Append all characters on one line to 'print'
 				print ~= writes[x][y].getCharacter();
 			}
+			//Set the cursor at the beginning of the line...
 			scp(XY(0, y));
 
+			//...and then print it.
 			cwrite(print);
+
+			//Reset 'print'.
 			print = null;
 		}
+		//Flush. Withouth this problems may occur.
 		stdout.flush();
-		
-		//scp(XY(0, 0));
 	}
 	
 	/*
@@ -181,14 +189,15 @@ class ConsoleWindow{
 		Slot[][] snap = new Slot[][](slots.length, slots[0].length);
 		foreach (x, col; snap) col[] = slots[x][];
 
+		//Magic pasta-code which returns a 'snap'.	
 		foreach(a; 0 .. layers.length){
 			if(layers[a].visible){
 				foreach(x; 0 .. layers[a].size.x){
-				foreach(y; 0 .. layers[a].size.y){
-					if(!layers[a].visible || layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap && layers[a].transparent)
-						continue;
-					snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
-				}
+					foreach(y; 0 .. layers[a].size.y){
+						if(!layers[a].visible || layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap && layers[a].transparent)
+							continue;
+						snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+					}
 				}
 			}
 		}
@@ -227,23 +236,23 @@ class ConsoleWindow{
 }
 
 class ConsoleLayer : ConsoleWindow{
+	
 	private ConsoleWindow parent;
-
 	protected XY location;
 	protected bool transparent_ = false, visible_ = true;
+	
+	protected void setParent(ConsoleWindow cw){
+		parent = cw;
+	}
+	protected void removeParent(){
+		parent = null;
+	}
 
 	this(XY location, XY size, bool transparent = false){
 		this.location = location;
 		this.transparent = transparent;
 		
 		super(size);
-	}
-
-	protected void setParent(ConsoleWindow cw){
-		parent = cw;
-	}
-	protected void removeParent(){
-		parent = null;
 	}
 
 	@property{
