@@ -12,6 +12,8 @@ alias md = colorize.mode;
 
 /*
 	TODO: See https://trello.com/b/p39UD2rJ/clayers
+	"\033[?7l" - Turn off linewrapping
+	"\033[?7h" - Turn on linewrapping
 */
 
 struct XY{size_t x,y;}
@@ -37,7 +39,6 @@ class ConsoleWindow{
 	protected Slot[][] slots;
 
 	private File log;
-	private bool safePrint = true;
 
 	this(XY size = XY(80, 24)){
 		//To get access to the windows console
@@ -63,19 +64,15 @@ class ConsoleWindow{
 		}
 	}
 
+	~this(){
+		cwrite("\033[?7h", fg.init, bg.init, md.init);
+	}
+
 	/**
 	* Logging method.
 	*/
 	void clayersLog(string s){
 		log.writeln(s);
-	}
-
-	/**
-	* If true, the last slot, bottom right slot, will not be printed.
-	* This is because some terminals on POSIX move the cursor down one line when finished printing, if the terminal width is the same as the ConsoleWindow.
-	*/
-	void setSafePrint(bool sp){
-		safePrint = sp;
 	}
 
 	//Functions to operate correctly with console/terminal. All code in here was borrowed and modified from 'robik/ConsoleD'.
@@ -157,8 +154,7 @@ class ConsoleWindow{
 		string print;
 		foreach(y; 0 .. height){
 			foreach(x; 0 .. width){
-				if(!(y == height-1 && x == width - 1 && safePrint))
-					print ~= writes[x][y].getCharacter();
+				print ~= writes[x][y].getCharacter();
 			}
 			scp(XY(0, y));
 
@@ -189,7 +185,7 @@ class ConsoleWindow{
 				}
 			}
 		}
-		return snap;
+	return snap;
 	}
 
 	/**
