@@ -4,9 +4,9 @@ import std.file;
 import std.math;
 
 /*
-This is a different flavour of the original write speed benchmarker.
+This is a write special version of the speed benchmarker.
 
-The purpose of this program is to rapidly print out a 80x24 window ten times, and measure the time to do so.
+All this does is printing out the values for 'SCP heavy' and 'liner' in separate files.
 */
 
 struct XY{ size_t x,y; }
@@ -15,23 +15,24 @@ void main(){
 	version(Windows)
 		hOutput = GetStdHandle(handle);
 
-    string os = "unknown";
-    int amount = 10;
+	string os = "unknown";
+	int amount = 10;
 
-    version(Windows){
-        os = "win";
-    }
-    version(Posix){
-        os = "posix";
-    }
+	version(Windows){
+		os = "win";
+	}
+	version(Posix){
+		os = "posix";
+	}
 
-    StopWatch s1, s2;
-    File file = File("output_"~os~"_w2itespeed.txt", "w");
+	StopWatch s1, s2;
+	File file1 = File("output_"~os~"_sw2itespeed_SCP.txt", "w");
+	file1.writeln("SCP heavy");
+	File file2 = File("output_"~os~"_sw2itespeed_liner.txt", "w");
+	file2.writeln("liner");
 
-    file.write("Testing on ", os, "\n");
-
-    foreach(a; 0 .. amount){
-        
+	foreach(a; 0 .. amount){
+		
         s1.start();
 		
 		foreach(y; 0 .. 24)
@@ -57,13 +58,14 @@ void main(){
 
         stdout.flush();
 
-        s2.stop();
+		s2.stop();
 
-        file.write("(", os, ") ", a, " slots:\n\t\t\tSCP heavy: ", s1.peek(), "(", s1.peek().msecs, "msecs)", "\n\t\t\tliner:     ", s2.peek(), "(", s2.peek().msecs, "msecs)", "\n");
+		file1.writeln(s1.peek());
+		file2.writeln(s2.peek());
 
-        s1.reset();
-        s2.reset();
-    }
+		s1.reset();
+		s2.reset();
+	}
 }
 
 version(Windows){
