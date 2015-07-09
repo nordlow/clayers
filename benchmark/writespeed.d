@@ -26,9 +26,9 @@ void main(){
 	}
 
 	StopWatch s1, s2;
-	File file1 = File("output_"~os~"_swritespeed_SCP.txt", "w");
+	File file1 = File("output_"~os~"_writespeed_SCP.txt", "w");
 	file1.writeln("SCP heavy");
-	File file2 = File("output_"~os~"_swritespeed_liner.txt", "w");
+	File file2 = File("output_"~os~"_writespeed_liner.txt", "w");
 	file2.writeln("liner");
 
 	foreach(a; 0 .. amount){
