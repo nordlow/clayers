@@ -1,10 +1,10 @@
 ﻿module clayers;
+
 import std.stdio;
 import std.algorithm;
 import std.conv;
 import std.range;
-import std.concurrency;
-import core.stdc.signal;
+
 import colorize;
 
 alias fg = colorize.fg;
@@ -12,7 +12,6 @@ alias bg = colorize.bg;
 alias md = colorize.mode;
 
 __gshared bool disableClayersSignalHandler = false;
-
 void setDisableClayersSignalHandler(bool dcsh){
 	disableClayersSignalHandler = dcsh;
 }
@@ -22,18 +21,17 @@ version(Posix){
 	extern(C) void signal(int sig, void function(int) );
 	extern(C) void handle(int sig){
 		//Thank you dav1d, from #d
-		import core.stdc.stdio;
-		import core.sys.posix.unistd;
+		import core.sys.posix.unistd : STDOUT_FILENO, write;
+		import core.stdc.signal;
 		
-		enum string rs = "\033[?7h\033[39;49;0m\033[0m";
-
+		enum string rs = "\033[?7h\033[0m";
 		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
-		std.stdio.stdout.flush();
+		stdout.flush();
 
 		signal(sig, SIG_DFL);
 		raise(sig);
 
-		//I am not 100% certain, but line-wrapping turned off in Windows for me, so I *hope* I don't have to handle that (yet).
+		//I am not 100% certain, but line-wrapping turned off in Windows for me, so I *hope* I don't have to handle that (yet). Colors do not get reset on Windows.
 	}
 }
 
