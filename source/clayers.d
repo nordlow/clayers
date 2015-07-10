@@ -4,21 +4,36 @@ import std.algorithm;
 import std.conv;
 import std.range;
 import std.concurrency;
-import core.thread;
-
+import core.stdc.signal;
 import colorize;
 
 alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
 
+__gshared bool disableClayersSignalHandler = false;
+
+void setDisableClayersSignalHandler(bool dcsh){
+	disableClayersSignalHandler = dcsh;
+}
+
 version(Posix){
-	//Thanks Heywood Floyd for showing me these fucntions
+	extern(C) void raise(int sig);
 	extern(C) void signal(int sig, void function(int) );
 	extern(C) void handle(int sig){
+		//Thank you dav1d, from #d
+		import core.stdc.stdio;
+		import core.sys.posix.unistd;
+		
+		enum string rs = "\033[?7h\033[39;49;0m\033[0m";
+
+		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
+		std.stdio.stdout.flush();
+
+		signal(sig, SIG_DFL);
+		raise(sig);
+
 		//I am not 100% certain, but line-wrapping turned off in Windows for me, so I *hope* I don't have to handle that (yet).
-		cwrite(color("\033[?7h", fg.init, bg.init, md.init));
-		thread_term();
 	}
 }
 
@@ -87,7 +102,8 @@ class ConsoleWindow{
 			hOutput = GetStdHandle(handle);
 		}
 		version(Posix){
-			signal(2, &handle);
+			if(!disableClayersSignalHandler)
+				signal(2, &handle);
 		}
 
 		//Sets console/terminal to no-linewrap.
@@ -181,13 +197,13 @@ class ConsoleWindow{
 	/**
 	 * Prints all the layers in the correct order.
 	 */
-	void print(){
+	void print(bool force = false){
 		//Get a snap of what to print out.
 		Slot[][] writes = snap();
 
 		string print;
 		foreach(y; 0 .. height){
-			if(lineDirty[y]){
+			if(lineDirty[y] || force){
 				foreach(x; 0 .. width){
 					//Append all characters on one line to 'print'
 					print ~= writes[x][y].getCharacter();
