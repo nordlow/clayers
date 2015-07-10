@@ -11,13 +11,14 @@ alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
 
-enum def = -1;
-
-/*
-TODO: See https://trello.com/b/p39UD2rJ/clayers
-"\033[?7l" - Turn off linewrapping
-"\033[?7h" - Turn on linewrapping
- */
+version(Posix){
+	//Thanks Heywood Floyd for showing me these fucntions
+	extern(C) void signal(int sig, void function(int) );
+	extern(C) void handle(int sig){
+		//I am not 100% certain, but line-wrapping turned off in Windows for me, so I *hope* I don't have to handle that (yet).
+		cwrite(color("\033[?7h", fg.init, bg.init, md.init));
+	}
+}
 
 struct XY{size_t x,y;}
 
@@ -31,8 +32,8 @@ struct Slot{
 	string getCharacter(){
 		return colorize.color(to!string(character), color, background, mode);
 	}
-
 }
+
 
 class ConsoleWindow{
 
@@ -46,34 +47,18 @@ class ConsoleWindow{
 
 	this(XY size){
 
-		//Create a the log file.
-		log = File("clayers.log", "w+");
-
-		version(Windows){
-			//For windows, creat a handle.
-			hOutput = GetStdHandle(handle);
-			//Sets console to no-linewrap.
-			SetConsoleMode(hOutput, 0x0);
-		}
-		version(Posix){
-			//Sets terminal to no-linewrap.
-			write("\033[?7l");
-		}
-
-		//Set the cursor to not be visible.
-		scv(false);
-
+		systemInit();
+		
 		this.size = size;
-
-		lineDirty = new bool[](size.y);
-		lineDirty[] = true;
-
 		//lineDirty[0 .. $] = true;
 		//Sets the width and height.
-		slots = new Slot[][](size.x, size.y);	
-		//Set every tile to be the background.
+		slots = new Slot[][](size.x, size.y);
+		//All lines are dirty from the beginning.
+		lineDirty = new bool[](size.y);
+		lineDirty[] = true;
+		//Set every tile to be blank.
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
-		//Print out all the tiles to remove junk characters
+		//Print out all the tiles to remove junk characters.
 		scp(XY(0, 0));
 		foreach(x; 0 .. size.x)
 			foreach(y; 0 .. size.y){
@@ -87,6 +72,25 @@ class ConsoleWindow{
 	 */
 	void clayersLog(string s){
 		log.writeln(s);
+	}
+
+
+	void systemInit(){
+		//Create a the log file.
+		log = File("clayers.log", "w+");
+
+		version(Windows){
+			//For windows, creat a handle.
+			hOutput = GetStdHandle(handle);
+		}
+		version(Posix){
+			signal(2, &handle);
+		}
+
+		//Sets console/terminal to no-linewrap.
+		slw(false);
+		//Set the cursor to not be visible.
+		scv(false);
 	}
 
 	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
@@ -116,6 +120,12 @@ class ConsoleWindow{
 				cci.bVisible = visible;
 				SetConsoleCursorInfo(hOutput, &cci);
 			}
+			/**
+			 * Sets line-wrapping on and off
+			 */
+			void slw(bool lw){
+				lw ? SetConsoleMode(hOutput, 0x0002) : SetConsoleMode(hOutput, 0x0);
+			}
 
 		}else version(Posix){
 			/**
@@ -132,6 +142,12 @@ class ConsoleWindow{
 				char c;
 				visible ? c = 'h' : c = 'l';
 				writef("\033[?25%c", c);
+			}
+			/**
+			 * Sets line-wrapping on and off
+			 */
+			void slw(bool lw){
+				lw ? write("\033[?7h") : write("\033[?7l");
 			}
 		}
 	}
