@@ -36,7 +36,6 @@ version(Posix){
 }
 
 struct XY{size_t x,y;}
-
 struct Slot{
 	dchar character;
 
@@ -91,7 +90,7 @@ class ConsoleWindow{
 	}
 
 
-	void systemInit(){
+	private void systemInit(){
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 
@@ -201,7 +200,7 @@ class ConsoleWindow{
 
 		string print;
 		foreach(y; 0 .. height){
-			if(lineDirty[y] || force){
+			if(force || lineDirty[y]){
 				foreach(x; 0 .. width){
 					//Append all characters on one line to 'print'
 					print ~= writes[x][y].getCharacter();
