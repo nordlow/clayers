@@ -4,6 +4,7 @@ import std.algorithm;
 import std.conv;
 import std.range;
 import std.concurrency;
+import core.thread;
 
 import colorize;
 
@@ -17,6 +18,7 @@ version(Posix){
 	extern(C) void handle(int sig){
 		//I am not 100% certain, but line-wrapping turned off in Windows for me, so I *hope* I don't have to handle that (yet).
 		cwrite(color("\033[?7h", fg.init, bg.init, md.init));
+		thread_term();
 	}
 }
 
@@ -60,11 +62,12 @@ class ConsoleWindow{
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
 		//Print out all the tiles to remove junk characters.
 		scp(XY(0, 0));
-		foreach(x; 0 .. size.x)
+		foreach(x; 0 .. size.x){
 			foreach(y; 0 .. size.y){
 				scp(XY(x, y));
 				write(' ');
 			}
+		}
 	}
 
 	/**
