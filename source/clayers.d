@@ -3,6 +3,7 @@ import std.stdio;
 import std.algorithm;
 import std.conv;
 import std.range;
+import std.concurrency;
 
 import colorize;
 
@@ -44,6 +45,7 @@ class ConsoleWindow{
 	private File log;
 
 	this(XY size){
+
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 

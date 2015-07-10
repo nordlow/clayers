@@ -80,8 +80,7 @@ void main(){
 	layerPopup2.write(XY(2, 9), "that one |", fg.yellow, bg.white);
 	layerPopup2.write(XY(11, 10), 'V', fg.yellow, bg.white);
 
-	//while(gameloop) //This should be your gameloop. This demo doesn't have a game to showcase.
-	foreach(a; 0 .. 100)
+	while(gameloop)
 		window.print();
 }
 ```
