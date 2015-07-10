@@ -35,6 +35,46 @@ version(Posix){
 	}
 }
 
+version(Windows){
+	import core.sys.windows.windows;
+	bool CtrlHandler( DWORD fdwCtrlType ) 
+	{ 
+		switch( fdwCtrlType ) 
+		{ 
+			// Handle the CTRL-C signal. 
+			case CTRL_C_EVENT: 
+				printf( "Ctrl-C event\n\n" );
+				Beep( 750, 300 ); 
+				return( true );
+
+				// CTRL-CLOSE: confirm that the user wants to exit. 
+			case CTRL_CLOSE_EVENT: 
+				Beep( 600, 200 ); 
+				printf( "Ctrl-Close event\n\n" );
+				return( true ); 
+
+				// Pass other signals to the next handler. 
+			case CTRL_BREAK_EVENT: 
+				Beep( 900, 200 ); 
+				printf( "Ctrl-Break event\n\n" );
+				return false; 
+
+			case CTRL_LOGOFF_EVENT: 
+				Beep( 1000, 200 ); 
+				printf( "Ctrl-Logoff event\n\n" );
+				return false; 
+
+			case CTRL_SHUTDOWN_EVENT: 
+				Beep( 750, 500 ); 
+				printf( "Ctrl-Shutdown event\n\n" );
+				return false; 
+
+			default: 
+				return false; 
+		} 
+	} 
+}
+
 struct XY{size_t x,y;}
 struct Slot{
 	dchar character;
@@ -97,6 +137,7 @@ class ConsoleWindow{
 		version(Windows){
 			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
+			SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, true )
 		}
 		version(Posix){
 			if(!disableClayersSignalHandler)
