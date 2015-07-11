@@ -1,4 +1,9 @@
-﻿module clayers;
+﻿//source\clayers.d(121): 
+//Error: function core.sys.windows.windows.SetConsoleCtrlHandler
+//(extern (Windows) int function(uint CtrlType) nothrow HandlerRoutine, int Add) is not callable using argument types
+//(extern (Windows) int function(uint CtrlType), int)
+
+module clayers;
 
 import std.stdio;
 import std.algorithm;
@@ -16,6 +21,8 @@ void setDisableClayersSignalHandler(bool dcsh){
 	disableClayersSignalHandler = dcsh;
 }
 
+
+//This is some ugly code, but necessary to make sure linewrapping gets reset.
 version(Posix){
 	extern(C) void raise(int sig);
 	extern(C) void signal(int sig, void function(int) );
@@ -30,29 +37,32 @@ version(Posix){
 
 		signal(sig, SIG_DFL);
 		raise(sig);
-
-		//I am not 100% certain, but line-wrapping turned off in Windows for me, so I *hope* I don't have to handle that (yet). Colors do not get reset on Windows.
 	}
 }
-
 version(Windows){
+
+	//TODO: I have no idea if thise code even works.
+
+	enum WinEvents {CTRL_C_EVENT = 0, CTRL_BREAK_EVENT = 1, CTRL_CLOSE_EVENT = 2, CTRL_LOGOFF_EVENT = 5, CTRL_SHUTDOWN_EVENT = 6}
 	import core.sys.windows.windows;
 
-	extern(Windows){
-		BOOL CtrlHandler( DWORD fdwCtrlType ) 
-		{ 
-			if( fdwCtrlType == 0) 
-			{
-				uint handle = STD_ERROR_HANDLE;
-				HANDLE hOutput = GetStdHandle(handle);
-				SetConsoleMode(hOutput, 0x0002);
+	__gshared bool quit = true;
 
-				//TODO: Needs to reset colors.
+	extern(Windows)
+	BOOL CtrlHandler( DWORD signal ) nothrow
+	{
+		if(signal == WinEvents.CTRL_C_EVENT && !quit)
+		{
+			uint handle = STD_ERROR_HANDLE;
+			
+			HANDLE hOutput = GetStdHandle(handle);
 
-				write("SHOULD NOT BE PRINTED UNLESS CTRL+C");
-			} 
-			return( TRUE );
-		} 
+			SetConsoleMode(hOutput, 0x0002);
+			SetConsoleTextAttribute(hOutput, 0);
+			return quit = true;
+		}
+
+		return false;
 	}
 }
 
@@ -118,7 +128,7 @@ class ConsoleWindow{
 		version(Windows){
 			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
-			SetConsoleCtrlHandler(cast(PHANDLER_ROUTINE)CtrlHandler(0), TRUE);
+			SetConsoleCtrlHandler(&CtrlHandler, TRUE);
 		}
 		version(Posix){
 			if(!disableClayersSignalHandler)
