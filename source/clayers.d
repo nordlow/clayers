@@ -290,9 +290,11 @@ class ConsoleWindow{
 	 * Params:
 	 *	 cl = Should be a already defined layer.
 	 */
-	void addLayer(ConsoleLayer cl){
-		cl.setParent(this);
-		layers ~= cl;
+	void addLayer(C...)(C consoleLayers){
+		foreach(cl; consoleLayers){
+			cl.setParent(this);
+			layers ~= cl;
+		}
 	}
 
 	/**
@@ -301,15 +303,17 @@ class ConsoleWindow{
 	 * Params:
 	 *	 cl = Layer to be removed.
 	 */
-	void removeLayer(ConsoleLayer cl){
-		foreach(n; 0 .. layers.length){
-			if(cl == layers[n]){
-				cl.removeParent();
-				layers = remove(layers, n);
-				return;
+	void removeLayer(C...)(C consoleLayers){
+		foreach(cl; consoleLayers){
+			foreach(n; 0 .. layers.length){
+				if(cl == layers[n]){
+					cl.removeParent();
+					layers = remove(layers, n);
+					return;
+				}
 			}
+			clayersLog("A layer could not be removed.");
 		}
-		clayersLog("A layer could not be removed.");
 	}
 
 }
@@ -318,7 +322,8 @@ class ConsoleLayer : ConsoleWindow{
 
 	private ConsoleWindow parent;
 	protected XY location;
-	protected bool transparent_ = false, visible_ = true;
+	protected bool transparent_ = false;
+	protected bool visible_     = true;
 
 	protected void setParent(ConsoleWindow cw){
 		parent = cw;
