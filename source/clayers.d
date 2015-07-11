@@ -290,7 +290,7 @@ class ConsoleWindow{
 	 * Params:
 	 *	 cl = Should be a already defined layer.
 	 */
-	void addLayer(C...)(C consoleLayers){
+	void addLayer(ConsoleLayer...)(ConsoleLayer consoleLayers){
 		foreach(cl; consoleLayers){
 			cl.setParent(this);
 			layers ~= cl;
@@ -303,7 +303,7 @@ class ConsoleWindow{
 	 * Params:
 	 *	 cl = Layer to be removed.
 	 */
-	void removeLayer(C...)(C consoleLayers){
+	void removeLayer(ConsoleLayer...)(ConsoleLayer consoleLayers){
 		foreach(cl; consoleLayers){
 			foreach(n; 0 .. layers.length){
 				if(cl == layers[n]){
