@@ -70,9 +70,16 @@ struct XY{size_t x,y;}
 struct Slot{
 	dchar character;
 
-	fg color = fg.init;
-	bg background = bg.init;
-	md mode = md.init;
+	//Temporarily while https://github.com/yamadapc/d-colorize/issues/13 still exists.
+	version(Windows){
+		fg color = fg.white;
+		bg background = bg.black;
+		md mode = md.init;
+	}else{
+		fg color = fg.init;
+		bg background = bg.init;
+		md mode = md.init;
+	}
 
 	string getCharacter(){
 		return colorize.color(to!string(character), color, background, mode);
@@ -128,7 +135,8 @@ class ConsoleWindow{
 		version(Windows){
 			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
-			SetConsoleCtrlHandler(&CtrlHandler, TRUE);
+			if(!disableClayersSignalHandler)
+				SetConsoleCtrlHandler(&CtrlHandler, TRUE);
 		}
 		version(Posix){
 			if(!disableClayersSignalHandler)
