@@ -276,11 +276,12 @@ class ConsoleLayer : ConsoleWindow{
 		parent = null;
 	}
 
-	this(XY location, XY size, bool transparent = false){
-		this.location = location;
+	this(XY topleft, XY bottomright, bool transparent = false, bool visible = true){
+		this.location = topleft;
 		this.transparent = transparent;
+		this.visible = visible;
 
-		super(size);
+		super(XY(bottomright.x - topleft.x, bottomright.y - topleft.y));
 	}
 
 	@property{
