@@ -1,9 +1,4 @@
-﻿//source\clayers.d(121): 
-//Error: function core.sys.windows.windows.SetConsoleCtrlHandler
-//(extern (Windows) int function(uint CtrlType) nothrow HandlerRoutine, int Add) is not callable using argument types
-//(extern (Windows) int function(uint CtrlType), int)
-
-module clayers;
+﻿module clayers;
 
 import std.stdio;
 import std.algorithm;
