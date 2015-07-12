@@ -16,21 +16,22 @@ alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
 
-__gshared bool disableClayersSignalHandler = false;
-void setDisableClayersSignalHandler(bool dcsh){
-	disableClayersSignalHandler = dcsh;
-}
+__gshared bool signalHandlerActive = true;
 
+void setSignalHandlerActive(bool active){
+	//This code must be run before a ConsoleWindow is created.
+	signalHandlerActive = active;
+}
 
 //This is some ugly code, but necessary to make sure linewrapping gets reset.
 version(Posix){
+	import core.stdc.signal;
+
 	extern(C) void raise(int sig);
 	extern(C) void signal(int sig, void function(int) );
 	extern(C) void handle(int sig){
-		//Thank you dav1d, from #d
 		import core.sys.posix.unistd : STDOUT_FILENO, write;
-		import core.stdc.signal;
-		
+		//Thank you dav1d, from #d
 		enum string rs = "\033[?7h\033[0m";
 		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
 		stdout.flush();
@@ -46,12 +47,10 @@ version(Windows){
 	enum WinEvents {CTRL_C_EVENT = 0, CTRL_BREAK_EVENT = 1, CTRL_CLOSE_EVENT = 2, CTRL_LOGOFF_EVENT = 5, CTRL_SHUTDOWN_EVENT = 6}
 	import core.sys.windows.windows;
 
-	__gshared bool quit = true;
-
 	extern(Windows)
 	BOOL CtrlHandler( DWORD signal ) nothrow
 	{
-		if(signal == WinEvents.CTRL_C_EVENT && !quit)
+		if(signal == WinEvents.CTRL_C_EVENT && signalHandlerActive)
 		{
 			uint handle = STD_ERROR_HANDLE;
 			
@@ -59,7 +58,9 @@ version(Windows){
 
 			SetConsoleMode(hOutput, 0x0002);
 			SetConsoleTextAttribute(hOutput, 0);
-			return quit = true;
+			signalHandlerActive = false;
+
+			return true;
 		}
 
 		return false;
@@ -135,11 +136,11 @@ class ConsoleWindow{
 		version(Windows){
 			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
-			if(!disableClayersSignalHandler)
+			if(signalHandlerActive)
 				SetConsoleCtrlHandler(&CtrlHandler, TRUE);
 		}
 		version(Posix){
-			if(!disableClayersSignalHandler)
+			if(signalHandlerActive)
 				signal(2, &handle);
 		}
 
