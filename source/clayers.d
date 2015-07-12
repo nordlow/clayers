@@ -78,6 +78,12 @@ class ConsoleWindow{
 		version(Posix){
 			if(signalHandlerActive)
 				signal(2, &handle);
+
+			ioctl(0, TIOCGWINSZ, &w);
+
+			printf ("lines %d\n", w.ws_row);
+			printf ("columns %d\n", w.ws_col);
+			readln();
 		}
 
 		//Sets console/terminal to no-linewrap.
@@ -440,6 +446,9 @@ void setSignalHandlerActive(bool active){
 //This is some ugly code, but necessary to make sure linewrapping gets reset.
 version(Posix){
 	import core.stdc.signal;
+	import core.sys.posix.sys.ioctl;
+
+	winsize w;
 
 	extern(C) void raise(int sig);
 	extern(C) void signal(int sig, void function(int) );
