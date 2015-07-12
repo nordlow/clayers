@@ -11,57 +11,6 @@ alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
 
-__gshared bool signalHandlerActive = true;
-
-void setSignalHandlerActive(bool active){
-	//This code must be run before a ConsoleWindow is created.
-	signalHandlerActive = active;
-}
-
-//This is some ugly code, but necessary to make sure linewrapping gets reset.
-version(Posix){
-	import core.stdc.signal;
-
-	extern(C) void raise(int sig);
-	extern(C) void signal(int sig, void function(int) );
-	extern(C) void handle(int sig){
-		import core.sys.posix.unistd : STDOUT_FILENO, write;
-		//Thank you dav1d, from #d
-		enum string rs = "\033[?7h\033[0m";
-		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
-		stdout.flush();
-
-		signal(sig, SIG_DFL);
-		raise(sig);
-	}
-}
-version(Windows){
-
-	//TODO: I have no idea if thise code even works.
-
-	enum WinEvents {CTRL_C_EVENT = 0, CTRL_BREAK_EVENT = 1, CTRL_CLOSE_EVENT = 2, CTRL_LOGOFF_EVENT = 5, CTRL_SHUTDOWN_EVENT = 6}
-	import core.sys.windows.windows;
-
-	extern(Windows)
-	BOOL CtrlHandler( DWORD signal ) nothrow
-	{
-		if(signal == WinEvents.CTRL_C_EVENT && signalHandlerActive)
-		{
-			uint handle = STD_ERROR_HANDLE;
-			
-			HANDLE hOutput = GetStdHandle(handle);
-
-			SetConsoleMode(hOutput, 0x0002);
-			SetConsoleTextAttribute(hOutput, 0);
-			signalHandlerActive = false;
-
-			return true;
-		}
-
-		return false;
-	}
-}
-
 struct XY{size_t x,y;}
 struct Slot{
 	dchar character;
@@ -70,12 +19,12 @@ struct Slot{
 	version(Windows){
 		fg color = fg.white;
 		bg background = bg.black;
-		md mode = md.init;
 	}else{
 		fg color = fg.init;
 		bg background = bg.init;
-		md mode = md.init;
 	}
+
+	md mode = md.init;
 
 	string getCharacter(){
 		return colorize.color(to!string(character), color, background, mode);
@@ -116,14 +65,6 @@ class ConsoleWindow{
 		}
 	}
 
-	/**
-	 * Logging method.
-	 */
-	void clayersLog(string s){
-		log.writeln(s);
-	}
-
-
 	private void systemInit(){
 		//Create a the log file.
 		log = File("clayers.log", "w+");
@@ -143,6 +84,13 @@ class ConsoleWindow{
 		slw(false);
 		//Set the cursor to not be visible.
 		scv(false);
+	}
+
+	/**
+	 * Logging method.
+	 */
+	void clayersLog(string s){
+		log.writeln(s);
 	}
 
 	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
@@ -369,41 +317,12 @@ class ConsoleLayer : ConsoleWindow{
 		return slots[location.x][location.y];
 	}
 
-	/*
-	 * Functions like std.stdio.write(), only it writes in the layer.
-	 *
-	 * Params:
-	 *	 xy = X and Y positions of where to write.
-	 *	 c = The character to write.
-	 */
-	void write(XY xy, dchar c){
-		try{
-			slots[xy.x][xy.y].character = c;
-			lineDirty[xy.y] = true;
-		}catch{
-			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
-		}
-	}
-
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
 			slots[xy.x][xy.y] = Slot(c, color, background, mode);
 			lineDirty[xy.y] = true;
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
-		}
-	}
-
-	/*
-	 * Functions like std.stdio.write(), only it writes in the layer. Does not wrap. 
-	 *
-	 * Params:
-	 *	 xy = X and Y positions of where to write.
-	 *	 s = The string to be written.
-	 */
-	void write(XY xy, string s){
-		foreach(a; 0 .. s.length){
-			write(XY(xy.x + a, xy.y), s[a]);
 		}
 	}
 	void write(XY xy, string s, fg color = fg.init, bg background = bg.init, md mode = md.init){
@@ -480,7 +399,7 @@ class ConsoleLayer : ConsoleWindow{
 	 *	 amount = The amount of times the layer should be moved.
 	 */
 	void moveForward(size_t amount = 1){
-		foreach(c; 0 .. amount)
+		foreach(c; 0 .. amount){
 			foreach(a; 0 .. parent.layers.length){
 				if(parent.layers[a] == this && a < parent.layers.length - 1){
 					auto t = parent.layers[a + 1];
@@ -488,6 +407,7 @@ class ConsoleLayer : ConsoleWindow{
 					parent.layers[a] = t;
 				}
 			}
+		}
 	}
 
 	/*
@@ -498,7 +418,7 @@ class ConsoleLayer : ConsoleWindow{
 	 *	 amount = The amount of times the layer should be moved.
 	 */
 	void moveBackward(size_t amount = 1){
-		foreach(c; 0 .. amount)
+		foreach(c; 0 .. amount){
 			foreach(a; 0 .. parent.layers.length){
 				if(parent.layers[a] == this && a > 0){
 					auto t = parent.layers[a - 1];
@@ -506,6 +426,56 @@ class ConsoleLayer : ConsoleWindow{
 					parent.layers[a] = t;
 				}
 			}
+		}
 	}
 }
 
+__gshared bool signalHandlerActive = true;
+void setSignalHandlerActive(bool active){
+	//This code must be run before a ConsoleWindow is created.
+	signalHandlerActive = active;
+}
+
+//This is some ugly code, but necessary to make sure linewrapping gets reset.
+version(Posix){
+	import core.stdc.signal;
+
+	extern(C) void raise(int sig);
+	extern(C) void signal(int sig, void function(int) );
+	extern(C) void handle(int sig){
+		import core.sys.posix.unistd : STDOUT_FILENO, write;
+		//Thank you dav1d, from #d
+		enum string rs = "\033[?7h\033[0m";
+		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
+		stdout.flush();
+
+		signal(sig, SIG_DFL);
+		raise(sig);
+	}
+}
+version(Windows){
+
+	//TODO: I have no idea if thise code even works.
+
+	enum WinEvents {CTRL_C_EVENT = 0, CTRL_BREAK_EVENT = 1, CTRL_CLOSE_EVENT = 2, CTRL_LOGOFF_EVENT = 5, CTRL_SHUTDOWN_EVENT = 6}
+	import core.sys.windows.windows;
+
+	extern(Windows)
+	BOOL CtrlHandler( DWORD signal ) nothrow
+	{
+		if(signal == WinEvents.CTRL_C_EVENT && signalHandlerActive)
+		{
+			uint handle = STD_ERROR_HANDLE;
+			
+			HANDLE hOutput = GetStdHandle(handle);
+
+			SetConsoleMode(hOutput, 0x0002);
+			SetConsoleTextAttribute(hOutput, 0);
+			signalHandlerActive = false;
+
+			return true;
+		}
+
+		return false;
+	}
+}
