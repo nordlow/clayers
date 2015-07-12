@@ -42,11 +42,13 @@ class ConsoleWindow{
 
 	private File log;
 
-	this(XY size){
+	this(XY windowSize = XY()){
+
+		if(windowSize.x <= 0 || windowSize.y <= 0) windowSize = gws();
+		size = windowSize;
 
 		systemInit();
 		
-		this.size = size;
 		//lineDirty[0 .. $] = true;
 		//Sets the width and height.
 		slots = new Slot[][](size.x, size.y);
@@ -69,6 +71,7 @@ class ConsoleWindow{
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 
+
 		version(Windows){
 			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
@@ -78,25 +81,12 @@ class ConsoleWindow{
 		version(Posix){
 			if(signalHandlerActive)
 				signal(2, &handle);
-
-			ioctl(0, TIOCGWINSZ, &w);
-
-			printf ("lines %d\n", w.ws_row);
-			printf ("columns %d\n", w.ws_col);
-			readln();
 		}
 
 		//Sets console/terminal to no-linewrap.
 		slw(false);
 		//Set the cursor to not be visible.
 		scv(false);
-	}
-
-	/**
-	 * Logging method.
-	 */
-	void clayersLog(string s){
-		log.writeln(s);
 	}
 
 	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
@@ -133,6 +123,16 @@ class ConsoleWindow{
 				lw ? SetConsoleMode(hOutput, 0x0002) : SetConsoleMode(hOutput, 0x0);
 			}
 
+			XY gws()
+			{
+				GetConsoleScreenBufferInfo( hOutput, &info );
+
+				auto x = (info.srWindow.Right  - info.srWindow.Left + 1);
+				auto y = (info.srWindow.Bottom - info.srWindow.Top  + 1);
+
+				return XY(x, y);
+			}
+
 		}else version(Posix){
 			/**
 			 * Set cursor position
@@ -155,7 +155,22 @@ class ConsoleWindow{
 			void slw(bool lw){
 				lw ? write("\033[?7h") : write("\033[?7l");
 			}
+
+			XY gws()
+			{
+				winsize w;
+				ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+				return XY(w.ws_col, w.ws_row);
+			}
 		}
+	}
+
+	/**
+	 * Logging method.
+	 */
+	void clayersLog(string s){
+		log.writeln(s);
 	}
 
 	@property{
@@ -447,13 +462,12 @@ void setSignalHandlerActive(bool active){
 version(Posix){
 	import core.stdc.signal;
 	import core.sys.posix.sys.ioctl;
-
-	winsize w;
+	import core.sys.posix.unistd : STDOUT_FILENO;
 
 	extern(C) void raise(int sig);
 	extern(C) void signal(int sig, void function(int) );
 	extern(C) void handle(int sig){
-		import core.sys.posix.unistd : STDOUT_FILENO, write;
+		import core.sys.posix.unistd : write;
 		//Thank you dav1d, from #d
 		enum string rs = "\033[?7h\033[0m";
 		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
