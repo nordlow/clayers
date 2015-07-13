@@ -38,9 +38,14 @@ class ConsoleWindow{
 	protected ConsoleLayer[] layers;
 	protected XY size;
 	protected Slot[][] slots;
-	protected bool[] lineDirty;
 
+	protected void sld(size_t y, bool dirty = true){
+		lineDirty[y] = dirty;
+	}
+
+	private bool[] lineDirty;
 	private File log;
+
 
 	this(XY windowSize = XY()){
 
@@ -88,6 +93,8 @@ class ConsoleWindow{
 		//Set the cursor to not be visible.
 		scv(false);
 	}
+
+	XY getWindowSize() @property { return gws(); }
 
 	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
 	private{
@@ -305,6 +312,10 @@ class ConsoleLayer : ConsoleWindow{
 		super(XY(bottomright.x - topleft.x, bottomright.y - topleft.y));
 	}
 
+	private void setLineDirty(size_t y, bool dirty = true){
+		parent.sld(y + location.y, dirty);
+	}
+
 	@property{
 		/**
 		 * Is the layer transparent or not?
@@ -342,7 +353,7 @@ class ConsoleLayer : ConsoleWindow{
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
 			slots[xy.x][xy.y] = Slot(c, color, background, mode);
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -356,10 +367,21 @@ class ConsoleLayer : ConsoleWindow{
 	/**
 	 * Set the text-color at specified location
 	 */
+	void setSlotCharacter(XY xy, dchar character){
+		try{
+			slots[xy.x][xy.y].character = character;
+			setLineDirty(xy.y);
+		}catch{
+			clayersLog("Warning: Failed to set color " ~ text(character) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+		}
+	}
+	/**
+	 * Set the text-color at specified location
+	 */
 	void setSlotColor(XY xy, fg color){
 		try{
 			slots[xy.x][xy.y].color = color;
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set color " ~ text(color) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -370,7 +392,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotBackground(XY xy, bg background){
 		try{
 			slots[xy.x][xy.y].background = background;
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set background " ~ text(background) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -381,7 +403,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotMode(XY xy, md mode){
 		try{
 			slots[xy.x][xy.y].mode = mode;
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set mode " ~ text(mode) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -469,7 +491,7 @@ version(Posix){
 	extern(C) void handle(int sig){
 		import core.sys.posix.unistd : write;
 		//Thank you dav1d, from #d
-		enum string rs = "\033[?7h\033[0m";
+		enum string rs = "\033[?7h \033[0m";
 		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
 		stdout.flush();
 
