@@ -62,6 +62,9 @@ class ConsoleWindow{
 		if(windowSize == XY())
 			windowSize = gws();
 		size = windowSize;
+		
+		write(size.x, ", ", size.y);
+		readln();
 
 		systemInit();
 		
@@ -74,6 +77,7 @@ class ConsoleWindow{
 		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
 		//Print out all the tiles to remove junk characters.
 		scp(XY(0, 0));
+
 		foreach(x; 0 .. size.x){
 			foreach(y; 0 .. size.y){
 				scp(XY(x, y));
@@ -430,11 +434,13 @@ private{
 
 		XY gws(){
 			GetConsoleScreenBufferInfo( hOutput, &info );
+			
+			int cols, rows;
+			
+			cols = (info.srWindow.Right  - info.srWindow.Left + 1);
+			rows = (info.srWindow.Bottom - info.srWindow.Top  + 1);
 
-			auto x = (info.srWindow.Right  - info.srWindow.Left + 1);
-			auto y = (info.srWindow.Bottom - info.srWindow.Top  + 1);
-
-			return XY(x, y);
+			return XY(cols, rows);
 		}
 	}
 
