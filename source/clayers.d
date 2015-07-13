@@ -156,6 +156,15 @@ class ConsoleWindow{
 					foreach(y; 0 .. layers[a].size.y){
 						if(!layers[a].visible || layers[a].getSlot(XY(x,y)).character == ' ' && layers[a].getSlot(XY(x,y)).background == bg.init && layers[a].getSlot(XY(x,y)).mode != md.swap && layers[a].transparent)
 							continue;
+
+						//Temp fix. #13 d-colorize
+						version(Windows){
+							if(layers[a].getSlot(XY(x,y)).color == fg.init)
+								layers[a].setSlotColor(XY(x,y), fg.white);
+							if(layers[a].getSlot(XY(x,y)).background == bg.init)
+								layers[a].setSlotBackground(XY(x,y), bg.black);
+						}
+
 						snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
 					}
 				}
