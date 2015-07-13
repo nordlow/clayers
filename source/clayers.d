@@ -38,15 +38,22 @@ class ConsoleWindow{
 	protected ConsoleLayer[] layers;
 	protected XY size;
 	protected Slot[][] slots;
-	protected bool[] lineDirty;
 
+	protected void sld(size_t y, bool dirty = true){
+		lineDirty[y] = dirty;
+	}
+
+	private bool[] lineDirty;
 	private File log;
 
-	this(XY size){
+
+	this(XY windowSize = XY()){
+
+		if(windowSize.x <= 0 || windowSize.y <= 0) windowSize = gws();
+		size = windowSize;
 
 		systemInit();
 		
-		this.size = size;
 		//lineDirty[0 .. $] = true;
 		//Sets the width and height.
 		slots = new Slot[][](size.x, size.y);
@@ -69,6 +76,7 @@ class ConsoleWindow{
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 
+
 		version(Windows){
 			//For windows, creat a handle.
 			hOutput = GetStdHandle(handle);
@@ -86,12 +94,7 @@ class ConsoleWindow{
 		scv(false);
 	}
 
-	/**
-	 * Logging method.
-	 */
-	void clayersLog(string s){
-		log.writeln(s);
-	}
+	XY getWindowSize() @property { return gws(); }
 
 	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
 	private{
@@ -127,6 +130,16 @@ class ConsoleWindow{
 				lw ? SetConsoleMode(hOutput, 0x0002) : SetConsoleMode(hOutput, 0x0);
 			}
 
+			XY gws()
+			{
+				GetConsoleScreenBufferInfo( hOutput, &info );
+
+				auto x = (info.srWindow.Right  - info.srWindow.Left + 1);
+				auto y = (info.srWindow.Bottom - info.srWindow.Top  + 1);
+
+				return XY(x, y);
+			}
+
 		}else version(Posix){
 			/**
 			 * Set cursor position
@@ -149,7 +162,22 @@ class ConsoleWindow{
 			void slw(bool lw){
 				lw ? write("\033[?7h") : write("\033[?7l");
 			}
+
+			XY gws()
+			{
+				winsize w;
+				ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+				return XY(w.ws_col, w.ws_row);
+			}
 		}
+	}
+
+	/**
+	 * Logging method.
+	 */
+	void clayersLog(string s){
+		log.writeln(s);
 	}
 
 	@property{
@@ -284,6 +312,10 @@ class ConsoleLayer : ConsoleWindow{
 		super(XY(bottomright.x - topleft.x, bottomright.y - topleft.y));
 	}
 
+	private void setLineDirty(size_t y, bool dirty = true){
+		parent.sld(y + location.y, dirty);
+	}
+
 	@property{
 		/**
 		 * Is the layer transparent or not?
@@ -321,7 +353,7 @@ class ConsoleLayer : ConsoleWindow{
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
 			slots[xy.x][xy.y] = Slot(c, color, background, mode);
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -335,10 +367,21 @@ class ConsoleLayer : ConsoleWindow{
 	/**
 	 * Set the text-color at specified location
 	 */
+	void setSlotCharacter(XY xy, dchar character){
+		try{
+			slots[xy.x][xy.y].character = character;
+			setLineDirty(xy.y);
+		}catch{
+			clayersLog("Warning: Failed to set color " ~ text(character) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+		}
+	}
+	/**
+	 * Set the text-color at specified location
+	 */
 	void setSlotColor(XY xy, fg color){
 		try{
 			slots[xy.x][xy.y].color = color;
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set color " ~ text(color) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -349,7 +392,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotBackground(XY xy, bg background){
 		try{
 			slots[xy.x][xy.y].background = background;
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set background " ~ text(background) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -360,7 +403,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotMode(XY xy, md mode){
 		try{
 			slots[xy.x][xy.y].mode = mode;
-			lineDirty[xy.y] = true;
+			setLineDirty(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set mode " ~ text(mode) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -440,13 +483,15 @@ void setSignalHandlerActive(bool active){
 //This is some ugly code, but necessary to make sure linewrapping gets reset.
 version(Posix){
 	import core.stdc.signal;
+	import core.sys.posix.sys.ioctl;
+	import core.sys.posix.unistd : STDOUT_FILENO;
 
 	extern(C) void raise(int sig);
 	extern(C) void signal(int sig, void function(int) );
 	extern(C) void handle(int sig){
-		import core.sys.posix.unistd : STDOUT_FILENO, write;
+		import core.sys.posix.unistd : write;
 		//Thank you dav1d, from #d
-		enum string rs = "\033[?7h\033[0m";
+		enum string rs = "\033[?7h \033[0m";
 		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
 		stdout.flush();
 
