@@ -31,6 +31,9 @@ struct Slot{
 	}
 }
 
+version(OSX){
+	enum TIOCGWINSZ = 0x40087468;
+}
 
 class ConsoleWindow{
 
