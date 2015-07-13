@@ -36,9 +36,9 @@ void main(){
 	auto window = new ConsoleWindow(XY(80, 24));
 
 	auto layerMain    = new ConsoleLayer(XY(0,  0), XY(split, window.height));
-	auto layerSidebar = new ConsoleLayer(XY(split, 0), XY(window.width - split, window.height)); //A sidebar
-	auto layerPopup   = new ConsoleLayer(XY(2, 15), XY(window.width - 5, 7 )); //Opaque box
-	auto layerPopup2  = new ConsoleLayer(XY(42, 4), XY(30, 15)); //Transparent box
+	auto layerSidebar = new ConsoleLayer(XY(split, 0), XY(window.width, window.height)); //A sidebar
+	auto layerPopup   = new ConsoleLayer(XY(2, 15), XY(window.width - 5, 22 )); //Opaque box
+	auto layerPopup2  = new ConsoleLayer(XY(42, 4), XY(30 + 42, 15 + 4)); //Transparent box
 
 	window.addLayer(layerMain);
 	window.addLayer(layerSidebar);
