@@ -396,7 +396,6 @@ void setSignalHandlerActive(bool active){
 private{
 	version(Windows){
 		import core.sys.windows.windows;
-		import core.sys.windows.windows;
 		import std.algorithm;
 
 		enum CTRL_C_EVENT = 0;
@@ -433,6 +432,7 @@ private{
 		}
 
 		XY gws(){
+			hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 			GetConsoleScreenBufferInfo( hOutput, &info );
 			
 			int cols, rows;
@@ -481,7 +481,6 @@ private{
 
 			return XY(w.ws_col, w.ws_row);
 		}
-
 	}
 
 	version(OSX){
