@@ -6,24 +6,16 @@ import std.conv;
 import std.range;
 
 import colorize;
-
 alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
 
 struct XY{size_t x,y;}
+
 struct Slot{
 	dchar character;
-
-	//Temporarily while https://github.com/yamadapc/d-colorize/issues/13 still exists.
-	version(Windows){
-		fg color = fg.white;
-		bg background = bg.black;
-	}else{
-		fg color = fg.init;
-		bg background = bg.init;
-	}
-
+	fg color = fg.init;
+	bg background = bg.init;
 	md mode = md.init;
 
 	string getCharacter(){
@@ -31,58 +23,17 @@ struct Slot{
 	}
 }
 
-version(OSX){
-	enum TIOCGWINSZ = 0x40087468;
-}
-
 class ConsoleWindow{
-
-	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
-	protected ConsoleLayer[] layers;
-	protected XY size;
-	protected Slot[][] slots;
-
-	protected void sld(size_t y, bool dirty = true){
-		lineDirty[y] = dirty;
-	}
-
-	private bool[] lineDirty;
 	private File log;
-
-
-	this(XY windowSize = XY()){
-
-		if(windowSize.x <= 0 || windowSize.y <= 0) windowSize = gws();
-		size = windowSize;
-
-		systemInit();
-		
-		//lineDirty[0 .. $] = true;
-		//Sets the width and height.
-		slots = new Slot[][](size.x, size.y);
-		//All lines are dirty from the beginning.
-		lineDirty = new bool[](size.y);
-		lineDirty[] = true;
-		//Set every tile to be blank.
-		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
-		//Print out all the tiles to remove junk characters.
-		scp(XY(0, 0));
-		foreach(x; 0 .. size.x){
-			foreach(y; 0 .. size.y){
-				scp(XY(x, y));
-				write(' ');
-			}
-		}
-	}
+	private bool[] lineDirty;
 
 	private void systemInit(){
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 
-
 		version(Windows){
 			//For windows, creat a handle.
-			hOutput = GetStdHandle(handle);
+			hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 			if(signalHandlerActive)
 				SetConsoleCtrlHandler(&CtrlHandler, TRUE);
 		}
@@ -97,81 +48,40 @@ class ConsoleWindow{
 		scv(false);
 	}
 
-	XY getWindowSize() @property { return gws(); }
+	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
+	protected ConsoleLayer[] layers;
+	protected XY size;
+	protected Slot[][] slots;
 
-	//Functions to operate correctly with console/terminal. All code in here was stolen and modified from 'robik/ConsoleD'.
-	private{
-		version(Windows){
-			import core.sys.windows.windows;
-			import std.algorithm;
-			uint handle = STD_ERROR_HANDLE;
-			CONSOLE_SCREEN_BUFFER_INFO info;
-			HANDLE hOutput, hInput;
+	protected void sld(size_t y, bool dirty = true){
+		lineDirty[y] = dirty;
+	}
 
-			/**
-			 * Set cursor position
-			 */
-			void scp(XY pos){
-				GetConsoleScreenBufferInfo( hOutput, &info );
-				COORD c = {cast(short)min(info.srWindow.Right  - info.srWindow.Left + 1, max(0,pos.x)), cast(short)max(0, pos.y)};
-				stdout.flush();
-				SetConsoleCursorPosition(hOutput, c);
-			}
-			/**
-			 * Sets the visibility of the cursor
-			 */
-			void scv(bool visible){
-				CONSOLE_CURSOR_INFO cci;
-				GetConsoleCursorInfo(hOutput, &cci);
-				cci.bVisible = visible;
-				SetConsoleCursorInfo(hOutput, &cci);
-			}
-			/**
-			 * Sets line-wrapping on and off
-			 */
-			void slw(bool lw){
-				lw ? SetConsoleMode(hOutput, 0x0002) : SetConsoleMode(hOutput, 0x0);
-			}
+	this(XY windowSize = XY()){
 
-			XY gws()
-			{
-				GetConsoleScreenBufferInfo( hOutput, &info );
+		if(windowSize == XY())
+			windowSize = gws();
+		size = windowSize;
+		
+		write(size.x, ", ", size.y);
+		readln();
 
-				auto x = (info.srWindow.Right  - info.srWindow.Left + 1);
-				auto y = (info.srWindow.Bottom - info.srWindow.Top  + 1);
+		systemInit();
+		
+		//Sets the width and height.
+		slots = new Slot[][](size.x, size.y);
+		//All lines are dirty from the beginning.
+		lineDirty = new bool[](size.y);
+		lineDirty[] = true;
+		//Set every tile to be blank.
+		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
+		//Print out all the tiles to remove junk characters.
+		scp(XY(0, 0));
 
-				return XY(x, y);
-			}
-
-		}else version(Posix){
-			/**
-			 * Set cursor position
-			 */
-			void scp(XY pos){
-				stdout.flush();
-				writef("\033[%d;%df", pos.y + 1, pos.x + 1);
-			}
-			/**
-			 * Sets the visibility of the cursor
-			 */
-			void scv(bool visible){
-				char c;
-				visible ? c = 'h' : c = 'l';
-				writef("\033[?25%c", c);
-			}
-			/**
-			 * Sets line-wrapping on and off
-			 */
-			void slw(bool lw){
-				lw ? write("\033[?7h") : write("\033[?7l");
-			}
-
-			XY gws()
-			{
-				winsize w;
-				ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-
-				return XY(w.ws_col, w.ws_row);
+		foreach(x; 0 .. size.x){
+			foreach(y; 0 .. size.y){
+				scp(XY(x, y));
+				write(' ');
 			}
 		}
 	}
@@ -282,7 +192,6 @@ class ConsoleWindow{
 		foreach(cl; consoleLayers){
 			foreach(n; 0 .. layers.length){
 				if(cl == layers[n]){
-					cl.removeParent();
 					layers = remove(layers, n);
 					return;
 				}
@@ -294,17 +203,16 @@ class ConsoleWindow{
 }
 
 class ConsoleLayer : ConsoleWindow{
-
 	private ConsoleWindow parent;
-	protected XY location;
-	protected bool transparent_ = false;
-	protected bool visible_     = true;
 
+	protected XY location;
+	protected bool transparent_ = false, visible_     = true;
+
+	protected override void sld(size_t y, bool dirty = true){
+		parent.sld(y + location.y, dirty);
+	}
 	protected void setParent(ConsoleWindow cw){
 		parent = cw;
-	}
-	protected void removeParent(){
-		parent = null;
 	}
 
 	this(XY topleft, XY bottomright, bool transparent = false, bool visible = true){
@@ -313,10 +221,6 @@ class ConsoleLayer : ConsoleWindow{
 		this.visible = visible;
 
 		super(XY(bottomright.x - topleft.x, bottomright.y - topleft.y));
-	}
-
-	private void setLineDirty(size_t y, bool dirty = true){
-		parent.sld(y + location.y, dirty);
 	}
 
 	@property{
@@ -356,7 +260,7 @@ class ConsoleLayer : ConsoleWindow{
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
 			slots[xy.x][xy.y] = Slot(c, color, background, mode);
-			setLineDirty(xy.y);
+			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -373,7 +277,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotCharacter(XY xy, dchar character){
 		try{
 			slots[xy.x][xy.y].character = character;
-			setLineDirty(xy.y);
+			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set color " ~ text(character) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -384,7 +288,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotColor(XY xy, fg color){
 		try{
 			slots[xy.x][xy.y].color = color;
-			setLineDirty(xy.y);
+			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set color " ~ text(color) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -395,7 +299,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotBackground(XY xy, bg background){
 		try{
 			slots[xy.x][xy.y].background = background;
-			setLineDirty(xy.y);
+			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set background " ~ text(background) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -406,7 +310,7 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotMode(XY xy, md mode){
 		try{
 			slots[xy.x][xy.y].mode = mode;
-			setLineDirty(xy.y);
+			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set mode " ~ text(mode) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
 		}
@@ -478,53 +382,109 @@ class ConsoleLayer : ConsoleWindow{
 }
 
 __gshared bool signalHandlerActive = true;
+
 void setSignalHandlerActive(bool active){
+
 	//This code must be run before a ConsoleWindow is created.
+
 	signalHandlerActive = active;
 }
 
-//This is some ugly code, but necessary to make sure linewrapping gets reset.
-version(Posix){
-	import core.stdc.signal;
-	import core.sys.posix.sys.ioctl;
-	import core.sys.posix.unistd : STDOUT_FILENO;
+/* OS SPECIFIC FUNCTIONS! */
 
-	extern(C) void raise(int sig);
-	extern(C) void signal(int sig, void function(int) );
-	extern(C) void handle(int sig){
-		import core.sys.posix.unistd : write;
-		//Thank you dav1d, from #d
-		enum string rs = "\033[?7h \033[0m";
-		core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
-		stdout.flush();
+//Much code in here was stolen and modified from 'robik/ConsoleD'.
+private{
+	version(Windows){
+		import core.sys.windows.windows;
+		import std.algorithm;
 
-		signal(sig, SIG_DFL);
-		raise(sig);
-	}
-}
-version(Windows){
+		enum CTRL_C_EVENT = 0;
+		CONSOLE_SCREEN_BUFFER_INFO info;
+		HANDLE hOutput, hInput;
 
-	//TODO: I have no idea if thise code even works.
+		extern(Windows) BOOL CtrlHandler( DWORD signal ) nothrow {
+			if(signal == CTRL_C_EVENT && signalHandlerActive){
+				HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	enum WinEvents {CTRL_C_EVENT = 0, CTRL_BREAK_EVENT = 1, CTRL_CLOSE_EVENT = 2, CTRL_LOGOFF_EVENT = 5, CTRL_SHUTDOWN_EVENT = 6}
-	import core.sys.windows.windows;
+				SetConsoleMode(hOutput, 0x0002);
+				SetConsoleTextAttribute(hOutput, 0);
+				signalHandlerActive = false;
 
-	extern(Windows)
-	BOOL CtrlHandler( DWORD signal ) nothrow
-	{
-		if(signal == WinEvents.CTRL_C_EVENT && signalHandlerActive)
-		{
-			uint handle = STD_ERROR_HANDLE;
-			
-			HANDLE hOutput = GetStdHandle(handle);
-
-			SetConsoleMode(hOutput, 0x0002);
-			SetConsoleTextAttribute(hOutput, 0);
-			signalHandlerActive = false;
-
-			return true;
+				return !!!false; // ;)
+			}
+			return false;
 		}
 
-		return false;
+		void scp(XY pos){
+			GetConsoleScreenBufferInfo( hOutput, &info );
+			COORD c = {cast(short)min(info.srWindow.Right  - info.srWindow.Left + 1, max(0,pos.x)), cast(short)max(0, pos.y)};
+			stdout.flush();
+			SetConsoleCursorPosition(hOutput, c);
+		}
+		void scv(bool visible){
+			CONSOLE_CURSOR_INFO cci;
+			GetConsoleCursorInfo(hOutput, &cci);
+			cci.bVisible = visible;
+			SetConsoleCursorInfo(hOutput, &cci);
+		}
+		void slw(bool lw){
+			lw ? SetConsoleMode(hOutput, 0x0002) : SetConsoleMode(hOutput, 0x0);
+		}
+
+		XY gws(){
+			hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+			GetConsoleScreenBufferInfo( hOutput, &info );
+			
+			int cols, rows;
+			
+			cols = (info.srWindow.Right  - info.srWindow.Left + 1);
+			rows = (info.srWindow.Bottom - info.srWindow.Top  + 1);
+
+			return XY(cols, rows);
+		}
+	}
+
+	version(Posix){
+		import core.stdc.signal;
+		import core.sys.posix.sys.ioctl;
+		import core.sys.posix.unistd : STDOUT_FILENO;
+
+		extern(C) void raise(int sig);
+		extern(C) void signal(int sig, void function(int) );
+		extern(C) void handle(int sig){
+			import core.sys.posix.unistd : write;
+			//Thank you dav1d, from #d
+			enum string rs = "\033[?7h \033[0m";
+			core.sys.posix.unistd.write(STDOUT_FILENO, rs.ptr, rs.length);
+			stdout.flush();
+
+			signal(sig, SIG_DFL);
+			raise(sig);
+		}
+
+		void scp(XY pos){
+			stdout.flush();
+			writef("\033[%d;%df", pos.y + 1, pos.x + 1);
+		}
+		void scv(bool visible){
+			char c;
+			visible ? c = 'h' : c = 'l';
+			writef("\033[?25%c", c);
+		}
+		void slw(bool lw){
+			lw ? write("\033[?7h") : write("\033[?7l");
+		}
+
+		XY gws(){
+			winsize w;
+			ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+			return XY(w.ws_col, w.ws_row);
+		}
+	}
+
+	version(OSX){
+		enum TIOCGWINSZ = 0x40087468;
 	}
 }
+
