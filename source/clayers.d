@@ -62,9 +62,6 @@ class ConsoleWindow{
 		if(windowSize == XY())
 			windowSize = gws();
 		size = windowSize;
-		
-		write(size.x, ", ", size.y);
-		readln();
 
 		systemInit();
 		
