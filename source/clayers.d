@@ -28,6 +28,8 @@ class ConsoleWindow{
 	private bool[] lineDirty;
 
 	private void systemInit(){
+		import std.c.stdlib;
+
 		//Create a the log file.
 		log = File("clayers.log", "w+");
 
@@ -46,6 +48,9 @@ class ConsoleWindow{
 		slw(false);
 		//Set the cursor to not be visible.
 		scv(false);
+
+		//Set linewrapping on exit.
+		atexit(&cleanup);
 	}
 
 	//TODO: Should layers be able to have their own sub-layers, which in turn could have even more sub-layers? I can see some pretty interesting things with this. If not, just change protected to private. ;-)
@@ -396,10 +401,15 @@ void setSignalHandlerActive(bool active){
 	signalHandlerActive = active;
 }
 
-/* OS SPECIFIC FUNCTIONS! */
-
 //Much code in here was stolen and modified from 'robik/ConsoleD'.
 private{
+	extern(C){
+		int atexit(void function ());
+		void cleanup(){
+			slw(true);
+		}
+	}
+
 	version(Windows){
 		import core.sys.windows.windows;
 		import std.algorithm;
