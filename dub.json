@@ -1,6 +1,6 @@
 {
 	"name": "clayers",
-	"description": "Console rendering with layers for games",
+	"description": "Layered console rendering game-dev lib with colors!",
 	"authors": ["Vladde Nordholm"],
 	"copyright": "Copyright (c) 2015 Vladde Nordholm",
 	"license": "MIT",
