@@ -1,14 +1,10 @@
 ﻿module clayers;
 
-import std.stdio;
-import std.algorithm;
-import std.conv;
-import std.range;
-
-import colorize;
 alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
+
+struct XY{size_t x,y;}
 
 struct Slot{
 	dchar character;
@@ -401,8 +397,11 @@ void setSignalHandlerActive(bool active){
 
 //Much code in here was stolen and modified from 'robik/ConsoleD'.
 private{
-
-	struct XY{size_t x,y;}
+	import std.stdio;
+	import std.algorithm;
+	import std.conv;
+	import std.range;
+	import colorize;
 
 	extern(C){
 		int atexit(void function ());
