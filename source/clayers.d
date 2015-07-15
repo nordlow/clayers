@@ -10,8 +10,6 @@ alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
 
-struct XY{size_t x,y;}
-
 struct Slot{
 	dchar character;
 	fg color = fg.init;
@@ -403,6 +401,9 @@ void setSignalHandlerActive(bool active){
 
 //Much code in here was stolen and modified from 'robik/ConsoleD'.
 private{
+
+	struct XY{size_t x,y;}
+
 	extern(C){
 		int atexit(void function ());
 		void cleanup(){
@@ -434,7 +435,7 @@ private{
 
 		void scp(XY pos){
 			GetConsoleScreenBufferInfo( hOutput, &info );
-			COORD c = {cast(short)min(info.srWindow.Right  - info.srWindow.Left + 1, max(0,pos.x)), cast(short)max(0, pos.y)};
+			COORD c = {cast(short)min(info.srWindow.Right - info.srWindow.Left + 1, max(0,pos.x)), cast(short)max(0, pos.y)};
 			stdout.flush();
 			SetConsoleCursorPosition(hOutput, c);
 		}
@@ -504,4 +505,3 @@ private{
 		enum TIOCGWINSZ = 0x40087468;
 	}
 }
-
