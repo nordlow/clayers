@@ -69,12 +69,12 @@ class ConsoleWindow{
 		systemInit();
 		
 		//Sets the width and height.
-		slots = new Slot[][](size.x, size.y);
+		slots = new Slot[][](size.y, size.x);
 		//All lines are dirty from the beginning.
 		lineDirty = new bool[](size.y);
 		lineDirty[] = true;
 		//Set every tile to be blank.
-		foreach(x; 0 .. size.x) slots[x][0 .. $] = Slot(' ');
+		foreach(y; 0 .. size.y) slots[y][0 .. $] = Slot(' ');
 		//Print out all the tiles to remove junk characters.
 		scp(XY(0, 0));
 
@@ -128,7 +128,7 @@ class ConsoleWindow{
 			if(force || lineDirty[y]){
 				foreach(x; 0 .. width){
 					//Append all characters on one line to 'print'
-					print ~= writes[x][y].getCharacter();
+					print ~= writes[y][x].getCharacter();
 				}
 				//Set the cursor at the beginning of the line...
 				scp(XY(0, y));
@@ -151,7 +151,7 @@ class ConsoleWindow{
 	Slot[][] snap(){
 		//Thanks ketmar from #d
 		Slot[][] snap = new Slot[][](slots.length, slots[0].length);
-		foreach (x, col; snap) col[] = slots[x][];
+		foreach (y, col; snap) col[] = slots[y][];
 
 		//Magic pasta-code which returns a 'snap'.	
 		foreach(a; 0 .. layers.length){
@@ -169,7 +169,7 @@ class ConsoleWindow{
 								layers[a].setSlotBackground(XY(x,y), bg.black);
 						}
 
-						snap[x+layers[a].location.x][y+layers[a].location.y] = layers[a].getSlot(XY(x,y));
+						snap[y+layers[a].location.y][x+layers[a].location.x] = layers[a].getSlot(XY(x,y));
 					}
 				}
 			}
@@ -263,12 +263,12 @@ class ConsoleLayer : ConsoleWindow{
 	 *	 location = X and Y coordinates of the slot to return.
 	 */	
 	override Slot getSlot(XY location){
-		return slots[location.x][location.y];
+		return slots[location.y][location.x];
 	}
 
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
-			slots[xy.x][xy.y] = Slot(c, color, background, mode);
+			slots[xy.y][xy.x] = Slot(c, color, background, mode);
 			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
@@ -285,7 +285,7 @@ class ConsoleLayer : ConsoleWindow{
 	 */
 	void setSlotCharacter(XY xy, dchar character){
 		try{
-			slots[xy.x][xy.y].character = character;
+			slots[xy.y][xy.x].character = character;
 			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set color " ~ text(character) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
@@ -296,7 +296,7 @@ class ConsoleLayer : ConsoleWindow{
 	 */
 	void setSlotColor(XY xy, fg color){
 		try{
-			slots[xy.x][xy.y].color = color;
+			slots[xy.y][xy.x].color = color;
 			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set color " ~ text(color) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
@@ -307,7 +307,7 @@ class ConsoleLayer : ConsoleWindow{
 	 */
 	void setSlotBackground(XY xy, bg background){
 		try{
-			slots[xy.x][xy.y].background = background;
+			slots[xy.y][xy.x].background = background;
 			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set background " ~ text(background) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
@@ -318,7 +318,7 @@ class ConsoleLayer : ConsoleWindow{
 	 */
 	void setSlotMode(XY xy, md mode){
 		try{
-			slots[xy.x][xy.y].mode = mode;
+			slots[xy.y][xy.x].mode = mode;
 			sld(xy.y);
 		}catch{
 			clayersLog("Warning: Failed to set mode " ~ text(mode) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
