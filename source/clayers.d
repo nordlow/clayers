@@ -407,6 +407,7 @@ private{
 		int atexit(void function ());
 		void cleanup(){
 			slw(true);
+			scv(true);
 		}
 	}
 
