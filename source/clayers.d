@@ -1,5 +1,11 @@
 ﻿module clayers;
 
+import std.stdio;
+import std.algorithm;
+import std.conv;
+import std.range;
+import colorize;
+
 alias fg = colorize.fg;
 alias bg = colorize.bg;
 alias md = colorize.mode;
@@ -18,14 +24,11 @@ struct Slot{
 }
 
 class ConsoleWindow{
-	private File log;
-	private bool[] lineDirty;
+
+	private XY[] lineDirty;
 
 	private void systemInit(){
 		import std.c.stdlib;
-
-		//Create a the log file.
-		log = File("clayers.log", "w+");
 
 		version(Windows){
 			//For windows, creat a handle.
@@ -52,14 +55,29 @@ class ConsoleWindow{
 	protected XY size;
 	protected Slot[][] slots;
 
-	protected void sld(size_t y, bool dirty = true){
-		lineDirty[y] = dirty;
+	protected void sld(XY pos){
+		auto line = pos.y;
+		auto col = pos.x;
+		auto a = lineDirty[line];
+
+		if(a.x == lineDirtyDefault){
+			a = XY(col, col + 1);
+		} else if (!(col > a.x && col < a.y)){
+			(col > a.x) ? a.y = col : a.x = col;
+		}
+
+		lineDirty[line] = a;
 	}
 
 	this(XY windowSize = XY()){
 
-		if(windowSize == XY())
-			windowSize = gws();
+		auto a = gws();
+
+		if(windowSize.x < 1)
+			windowSize.x = a.x;
+		if(windowSize.y < 1)
+			windowSize.y = a.y;
+		
 		size = windowSize;
 
 		systemInit();
@@ -67,8 +85,8 @@ class ConsoleWindow{
 		//Sets the width and height.
 		slots = new Slot[][](size.y, size.x);
 		//All lines are dirty from the beginning.
-		lineDirty = new bool[](size.y);
-		lineDirty[] = true;
+		lineDirty = new XY[](size.y);
+		lineDirty[] = XY(0, size.x);
 		//Set every tile to be blank.
 		foreach(y; 0 .. size.y) slots[y][0 .. $] = Slot(' ');
 		//Print out all the tiles to remove junk characters.
@@ -80,13 +98,6 @@ class ConsoleWindow{
 				write(' ');
 			}
 		}
-	}
-
-	/**
-	 * Logging method.
-	 */
-	void clayersLog(string s){
-		log.writeln(s);
 	}
 
 	@property{
@@ -121,20 +132,20 @@ class ConsoleWindow{
 
 		string print;
 		foreach(y; 0 .. height){
-			if(force || lineDirty[y]){
-				foreach(x; 0 .. width){
+			if(force || lineDirty[y].x != lineDirtyDefault){
+				foreach(x; lineDirty[y].x .. lineDirty[y].y){
 					//Append all characters on one line to 'print'
 					print ~= writes[y][x].getCharacter();
 				}
 				//Set the cursor at the beginning of the line...
-				scp(XY(0, y));
+				scp(XY(lineDirty[y].x, y));
 
 				//...and then print it.
 				cwrite(print);
 
 				//Reset 'print'.
 				print = null;
-				lineDirty[y] = false;
+				lineDirty[y] = XY(lineDirtyDefault, lineDirtyDefault);
 			}
 		}
 		//Flush. Withouth this problems may occur.
@@ -211,10 +222,10 @@ class ConsoleLayer : ConsoleWindow{
 	private ConsoleWindow parent;
 
 	protected XY location;
-	protected bool transparent_ = false, visible_     = true;
+	protected bool transparent_ = false, visible_ = true;
 
-	protected override void sld(size_t y, bool dirty = true){
-		parent.sld(y + location.y, dirty);
+	protected override void sld(XY xy){
+		parent.sld(XY(location.x + xy.x, location.y + xy.y));
 	}
 	protected void setParent(ConsoleWindow cw){
 		parent = cw;
@@ -235,7 +246,6 @@ class ConsoleLayer : ConsoleWindow{
 		bool transparent(){
 			return transparent_;
 		}
-
 		bool transparent(bool isTransparent){
 			return transparent_ = isTransparent;
 		}
@@ -246,7 +256,6 @@ class ConsoleLayer : ConsoleWindow{
 		bool visible(){
 			return visible_;
 		}
-
 		bool visible(bool isVisible){
 			return visible_ = isVisible;
 		}
@@ -265,9 +274,9 @@ class ConsoleLayer : ConsoleWindow{
 	void write(XY xy, dchar c, fg color = fg.init, bg background = bg.init, md mode = md.init){
 		try{
 			slots[xy.y][xy.x] = Slot(c, color, background, mode);
-			sld(xy.y);
+			sld(xy);
 		}catch{
-			clayersLog("Warning: Failed to write " ~ text(c) ~ " at (" ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+			clayersLog("Warning: Failed to write ", c, " at ", xy.x, ", ", xy.y, ")");
 		}
 	}
 	void write(XY xy, string s, fg color = fg.init, bg background = bg.init, md mode = md.init){
@@ -282,9 +291,9 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotCharacter(XY xy, dchar character){
 		try{
 			slots[xy.y][xy.x].character = character;
-			sld(xy.y);
+			sld(xy);
 		}catch{
-			clayersLog("Warning: Failed to set color " ~ text(character) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+			clayersLog("Warning: Failed to set color ", character, " at ", xy.x, ", ", xy.y, ")");
 		}
 	}
 	/**
@@ -293,9 +302,9 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotColor(XY xy, fg color){
 		try{
 			slots[xy.y][xy.x].color = color;
-			sld(xy.y);
+			sld(xy);
 		}catch{
-			clayersLog("Warning: Failed to set color " ~ text(color) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+			clayersLog("Warning: Failed to set color ", color, " at ", xy.x, ", ", xy.y, ")");
 		}
 	}
 	/**
@@ -304,9 +313,9 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotBackground(XY xy, bg background){
 		try{
 			slots[xy.y][xy.x].background = background;
-			sld(xy.y);
+			sld(xy);
 		}catch{
-			clayersLog("Warning: Failed to set background " ~ text(background) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+			clayersLog("Warning: Failed to set background ", background, " at ", xy.x, ", ", xy.y, ")");
 		}
 	}
 	/**
@@ -315,9 +324,9 @@ class ConsoleLayer : ConsoleWindow{
 	void setSlotMode(XY xy, md mode){
 		try{
 			slots[xy.y][xy.x].mode = mode;
-			sld(xy.y);
+			sld(xy);
 		}catch{
-			clayersLog("Warning: Failed to set mode " ~ text(mode) ~ " at " ~ text(xy.x) ~ ", " ~ text(xy.y) ~ ")");
+			clayersLog("Warning: Failed to set mode ", mode, " at ", xy.x, ", ", xy.y, ")");
 		}
 	}
 
@@ -331,7 +340,7 @@ class ConsoleLayer : ConsoleWindow{
 	 * Moves the layer to the front.
 	 *
 	 * Params:
-	 *	 cl = Layer to be moved to the front.
+	 *  cl = Layer to be moved to the front.
 	 */
 	void moveToFront(){
 		moveForward(parent.layers.length);
@@ -395,13 +404,22 @@ void setSignalHandlerActive(bool active){
 	signalHandlerActive = active;
 }
 
+/**
+ * Logging method.
+ */
+void clayersLog(S...)(S args){
+	log.writeln(args);
+}
+
 //Much code in here was stolen and modified from 'robik/ConsoleD'.
 private{
-	import std.stdio;
-	import std.algorithm;
-	import std.conv;
-	import std.range;
-	import colorize;
+
+	File log;
+	enum size_t lineDirtyDefault = -1;
+
+	static this(){
+		log = File("clayers.log", "w+");
+	}
 
 	extern(C){
 		int atexit(void function ());
